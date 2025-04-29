@@ -352,8 +352,15 @@ app.controller("CompleteProfileController", function ($scope, $location, $http, 
   };
 });
 //Content controller
-app.controller("ContentController", function ($scope, $location, AuthService) {
-  $scope.username = AuthService.user ? AuthService.user.username : "";
+app.controller("ContentController", function ($scope, $location, $http, AuthService) {
+  
+  $scope.profile = {}; // store the user profile
+
+  $http.get("profile.php").then(function (response){
+    if(response.data.success){
+      $scope.profile = response.data.profile;
+    }
+  });
 
   $scope.viewProfile = function () {
     $location.path("/profile");

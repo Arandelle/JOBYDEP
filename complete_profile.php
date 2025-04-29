@@ -80,7 +80,7 @@ $stmt->close();
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
 // Update user profile
-$stmt = $conn->prepare("UPDATE users SET username = ?, password = ?, full_name = ?, bio = ? WHERE id = ?");
+$stmt = $conn->prepare("UPDATE users SET username = ?, password = ?, full_name = ?, bio = ?, profile_completed = 1 WHERE id = ?");
 $stmt->bind_param("ssssi", $username, $hashedPassword, $fullName, $bio, $user['id']);
 
 if($stmt->execute()) {
