@@ -38,7 +38,7 @@ app.config(function ($routeProvider) {
     })
     .when("/verify-otp", {
       templateUrl: "templates/verify-otp.html",
-      controller: 'VerifyOTPController',
+      controller: 'VerifyOtpController',
       resolve: {auth: redirectIfAuthenticated}
     })
     .when("/complete-profile", {
@@ -228,7 +228,7 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
 // OTP Verification Controller
 app.controller("VerifyOtpController", function ($scope, $location, $http) {
   $scope.verificationData = {
-    email: sessionStorage.getItem("pendingEmail") || "",
+    email: sessionStorage.getItem("pendingEmail") || sessionStorage.getItem("verifiedEmail") ||  "",
     otp: ""
   };
 
@@ -254,6 +254,7 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
           
           // Clear the pending email
           sessionStorage.removeItem("pendingEmail");
+          sessionStorage.setItem("verifiedEmail", $scope.verificationData.email);
           
           // Redirect to complete profile page
           setTimeout(function () {
