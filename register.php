@@ -1,6 +1,6 @@
-<?php 
-session_start();
-header('Content-Type: application/json');
+<?php
+session_start(); // start session to manage user session data
+header('Content-Type: application/json'); // set content type to JSON
 
 require_once 'database_ojt.php';
 
@@ -17,11 +17,12 @@ $conn = getDbConnection();
 
 
 //Get post data 
-$data = json_decode(file_get_contents("php://input"), true);
-$email = isset($data['email']) ? trim($data['email']) : "";
+// This reads raw data input from HTTP request body
+$data = json_decode(file_get_contents("php://input"), true); // decodes the JSON
+$email = isset($data['email']) ? trim($data['email']) : ""; // extract the email
 
 // Validate input
-if(empty($email)) {
+if (empty($email)) {
     echo json_encode([
         'success' => false,
         'message' => 'email is require'
@@ -30,12 +31,12 @@ if(empty($email)) {
 }
 
 //validate email format
-if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode([
         'success' => false,
         'message' => "Invalid email format"
     ]);
-    exit;   
+    exit;
 }
 
 // Check if email already exists
@@ -43,7 +44,7 @@ $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
-if($result->num_rows > 0) {
+if ($result->num_rows > 0) {
     echo json_encode([
         'success' => false,
         'message' => 'Email already exists'
@@ -52,28 +53,22 @@ if($result->num_rows > 0) {
     $conn->close();
     exit;
 }
-$stmt->close();
+// generates otp
+$otp = rand(100000, 999999);
+$otp_expiry = time() + 5; // 15 minutes from as timestamp 
 
-    $otp = rand(100000, 999999);
-    $otp_expiry = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+// store the data to session and not push to DB
+$_SESSION['pending_email'] = $email;
+$_SESSION['pending_otp'] = $otp;
+$_SESSION['otp_expiry'] = $otp_expiry;
 
-// Insert new user
-$stmt = $conn->prepare("INSERT INTO users (email, otp, otp_expiry, is_verified) VALUES (?,?,?, 0)");
-$stmt->bind_param("sss", $email, $otp, $otp_expiry);
-
-if($stmt->execute()) {
-    echo json_encode([
-        'success' => true,
-        'message' => 'Registration successful',
-        'otp' => $otp
-    ]);
-} else {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Registration failed: ' . $stmt->error
-    ]);
-}
+echo json_encode([
+    'success' => true,
+    'message' => 'OTP generated successfully',
+    'test_otp' => $otp
+]);
 
 $stmt->close();
 $conn->close();
+
 ?>

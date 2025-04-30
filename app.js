@@ -192,7 +192,7 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
       $scope.errorMessage = "Email is required";
       return;
     }
-    
+    // send registration request to PHP server
     AuthService.register($scope.userData)
       .then(function (response) {
         if (response.data.success) {
@@ -201,6 +201,10 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
           
           // Save email in session storage for verification step
           sessionStorage.setItem("pendingEmail", $scope.userData.email);
+
+          if(response.data.test_otp){
+            sessionStorage.setItem("testOTP", response.data.test_otp);
+          }
           
           // Redirect to OTP verification page after 1.5 seconds
           setTimeout(function () {
@@ -234,6 +238,8 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
 
   $scope.errorMessage = "";
   $scope.successMessage = "";
+
+  $scope.tesOtp = sessionStorage.getItem("testOTP") || ""
   
   // If no pending email, redirect to registration
   if (!$scope.verificationData.email) {
@@ -254,6 +260,7 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
           
           // Clear the pending email
           sessionStorage.removeItem("pendingEmail");
+          sessionStorage.removeItem("testOTP");
           sessionStorage.setItem("verifiedEmail", $scope.verificationData.email);
           
           // Redirect to complete profile page
@@ -275,11 +282,18 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
   };
 
   $scope.resendOtp = function() {
-    $http.post("resend_otp.php", { email: $scope.verificationData.email })
+    $http.post("resend_otp.php", {email: $scope.verificationData.email})
       .then(function(response) {
         if (response.data.success) {
           $scope.successMessage = "New OTP sent successfully!";
           $scope.errorMessage = "";
+
+          // save test OTP for display
+          if(response.data.test_otp){
+            sessionStorage.setItem("testOTP", response.data.test_otp);
+            $scope.tesOtp = response.data.test_otp;
+          }
+
         } else {
           $scope.errorMessage = response.data.message || "Failed to resend OTP";
           $scope.successMessage = "";

@@ -16,12 +16,50 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $conn = getDbConnection();
 
 // Get post data 
-$data = json_decode(file_get_contents("php://input"), true);
+$data = json_decode(file_get_contents("php://input"), true); // reads the raw data from AngularJS
 $email = isset($data['email']) ? trim($data['email']) : "";
-$otp = isset($data['otp']) ? trim($data['otp']) : "";
+$otp = isset($data['otp']) ? trim($data['otp']) : ""; // extract otp - user input
+
+
+if(empty($email) || empty($otp)){
+    echo json_encode([
+        'success' => false,
+        'message' => "Email and OTP are required"
+    ]);
+    exit;
+}
+
+$_SESSION['pending_otp'] = $otp; // update it for resending new otp
+
+// check if session has pending OTP data
+if(!isset($_SESSION['pending_email']) && !isset($_SESSION['pending_otp']) && !isset($_SESSION['otp_expiry'])){
+    echo json_encode([
+        'success' => false,
+        'message' => "No OTP found. Please try again!"
+    ]);
+    exit;
+}
+
+// Verify the email matches the pending email
+if($email != $_SESSION['pending_email']){
+    echo json_encode([
+        'success' => false,
+        'message' => "Email does not match the one used for OTP generation"
+    ]);
+    exit;
+}
+
+//Validate otp
+if($otp != $_SESSION['pending_otp']){
+    echo json_encode([
+        'success' => false,
+        'message' => "Incorrect OTP. Please try again"
+    ]);
+    exit;
+}
 
 // Validate input
-if(empty($email) || empty($otp)) {
+if(empty($otp)) {
     echo json_encode([
         'success' => false,
         'message' => 'Email and OTP are required'
@@ -29,61 +67,36 @@ if(empty($email) || empty($otp)) {
     exit;
 }
 
-// Check if email exists and OTP is valid
-$stmt = $conn->prepare("SELECT id, otp, otp_expiry FROM users WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
 
-if($result->num_rows === 0) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Email not found'
-    ]);
-    $stmt->close();
-    $conn->close();
-    exit;
-}
-
-$user = $result->fetch_assoc();
-$stmt->close();
 
 // Check if OTP matches and is not expired
-$current_time = date('Y-m-d H:i:s');
-if($user['otp'] !== $otp) {
+$current_time = time();
+if($_SESSION['otp_expiry'] < $current_time){
     echo json_encode([
         'success' => false,
-        'message' => 'Invalid OTP'
+        'message' => "OTP expired. Please request a new one"
     ]);
-    $conn->close();
-    exit;
+     exit;
 }
 
-if($current_time > $user['otp_expiry']) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'OTP has expired. Please request a new one.'
-    ]);
-    $conn->close();
-    exit;
-}
 
-// Mark user as verified
-$stmt = $conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
-$stmt->bind_param("i", $user['id']);
+$stmt = $conn->prepare("INSERT INTO users (email) VALUES (?)");
+$stmt->bind_param('s', $email);
 
-if($stmt->execute()) {
-    // Store verified email in session for the next step
-    $_SESSION['verified_email'] = $email;
-    
+if($stmt->execute()){
+    // clear the session after successful insert
+    unset($_SESSION['pending_email']);
+    unset($_SESSION['pending_otp']);
+    unset($_SESSION['otp_expiry']);
+
     echo json_encode([
         'success' => true,
-        'message' => 'Email verified successfully'
+        'message' => "email verified successfully"
     ]);
-} else {
+} else{
     echo json_encode([
         'success' => false,
-        'message' => 'Verification failed: ' . $stmt->error
+        'message' => "Verification failed" . $stmt->error
     ]);
 }
 
