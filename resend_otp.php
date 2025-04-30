@@ -43,5 +43,6 @@ $_SESSION['otp_expiry'] = $new_otp_expiry;
 echo json_encode([
     "success" => true,
     'message' => "New OTP sent successfully",
-    'test_otp' => $new_otp
+    'test_otp' => $new_otp,
+    'otp_expiry' => $new_otp_expiry
 ]);

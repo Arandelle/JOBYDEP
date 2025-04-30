@@ -19,9 +19,10 @@ $conn = getDbConnection();
 $data = json_decode(file_get_contents("php://input"), true); // reads the raw data from AngularJS
 $email = isset($data['email']) ? trim($data['email']) : "";
 $otp = isset($data['otp']) ? trim($data['otp']) : ""; // extract otp - user input
+$otp_expiry = isset($data['otp_expiry']) ? trim($data['otp_expiry']) : "";
 
 
-if(empty($email) || empty($otp)){
+if(empty($email) || empty($otp) || empty($otp_expiry)){
     echo json_encode([
         'success' => false,
         'message' => "Email and OTP are required"
@@ -30,6 +31,7 @@ if(empty($email) || empty($otp)){
 }
 
 $_SESSION['pending_otp'] = $otp; // update it for resending new otp
+$_SESSION['otp_expiry'] = $otp_expiry;
 
 // check if session has pending OTP data
 if(!isset($_SESSION['pending_email']) && !isset($_SESSION['pending_otp']) && !isset($_SESSION['otp_expiry'])){
@@ -62,7 +64,7 @@ if($otp != $_SESSION['pending_otp']){
 if(empty($otp)) {
     echo json_encode([
         'success' => false,
-        'message' => 'Email and OTP are required'
+        'message' =>  'OTP are required'
     ]);
     exit;
 }

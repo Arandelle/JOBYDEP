@@ -204,6 +204,7 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
 
           if(response.data.test_otp){
             sessionStorage.setItem("testOTP", response.data.test_otp);
+            sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
           }
           
           // Redirect to OTP verification page after 1.5 seconds
@@ -233,13 +234,12 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
 app.controller("VerifyOtpController", function ($scope, $location, $http) {
   $scope.verificationData = {
     email: sessionStorage.getItem("pendingEmail") || sessionStorage.getItem("verifiedEmail") ||  "",
-    otp: ""
+    otp: sessionStorage.getItem("testOTP") || "",
+    otp_expiry: sessionStorage.getItem("otp_expiry") || ""
   };
 
   $scope.errorMessage = "";
   $scope.successMessage = "";
-
-  $scope.tesOtp = sessionStorage.getItem("testOTP") || ""
   
   // If no pending email, redirect to registration
   if (!$scope.verificationData.email) {
@@ -261,6 +261,7 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
           // Clear the pending email
           sessionStorage.removeItem("pendingEmail");
           sessionStorage.removeItem("testOTP");
+          sessionStorage.removeItem("otp_expiry");
           sessionStorage.setItem("verifiedEmail", $scope.verificationData.email);
           
           // Redirect to complete profile page
@@ -292,7 +293,9 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
           // save test OTP for display
           if(response.data.test_otp){
             sessionStorage.setItem("testOTP", response.data.test_otp);
-            $scope.tesOtp = response.data.test_otp;
+            sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+            $scope.verificationData.otp = response.data.test_otp;
+            $scope.verificationData.otp_expiry = response.data.otp_expiry;
           }
 
         } else {

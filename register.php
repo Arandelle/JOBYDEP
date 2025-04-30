@@ -55,7 +55,7 @@ if ($result->num_rows > 0) {
 }
 // generates otp
 $otp = rand(100000, 999999);
-$otp_expiry = time() + 5; // 15 minutes from as timestamp 
+$otp_expiry = time() + 15; // 15 seconds
 
 // store the data to session and not push to DB
 $_SESSION['pending_email'] = $email;
@@ -65,7 +65,8 @@ $_SESSION['otp_expiry'] = $otp_expiry;
 echo json_encode([
     'success' => true,
     'message' => 'OTP generated successfully',
-    'test_otp' => $otp
+    'test_otp' => $otp,
+    'otp_expiry' => $otp_expiry
 ]);
 
 $stmt->close();
