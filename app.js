@@ -269,7 +269,8 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
               $location.path("/complete-profile");
             });
           }, 1500);
-        } else {
+        } else {  
+          console.error("ERror Occur: ", response.data.message)
           $scope.errorMessage = response.data.message || "Verification Failed";
           $scope.successMessage = "";
         }

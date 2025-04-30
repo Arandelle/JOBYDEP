@@ -67,8 +67,6 @@ if(empty($otp)) {
     exit;
 }
 
-
-
 // Check if OTP matches and is not expired
 $current_time = time();
 if($_SESSION['otp_expiry'] < $current_time){
@@ -79,11 +77,36 @@ if($_SESSION['otp_expiry'] < $current_time){
      exit;
 }
 
-
-$stmt = $conn->prepare("INSERT INTO users (email) VALUES (?)");
+// check if email is already exists in DB
+$stmt = $conn->prepare("SELECT id, is_verified FROM users WHERE email = ?");
 $stmt->bind_param('s', $email);
+$stmt->execute();
+$result = $stmt->get_result();
 
-if($stmt->execute()){
+    if($result->num_rows > 0){
+        // email exists
+        $row = $result->fetch_assoc();
+
+        if($row['is_verified'] == 0){
+            // update is_verified
+            $update = $conn->prepare("UPDATE users SET is_verified = 1 WHERE email = ?");
+            $update->bind_param("s", $email);
+            $update->execute();
+            $update->close();
+        } else{
+            echo json_encode([
+                'success' => false,
+                'message' => "Email is already verified"
+            ]);
+            exit;
+        }
+    } else {
+        $insert = $conn->prepare("INSERT INTO users (email, is_verified) VALUES (?, 1)");
+        $insert->bind_param("s", $email);
+        $insert->execute();
+        $insert->close();
+    }
+
     // clear the session after successful insert
     unset($_SESSION['pending_email']);
     unset($_SESSION['pending_otp']);
@@ -93,12 +116,6 @@ if($stmt->execute()){
         'success' => true,
         'message' => "email verified successfully"
     ]);
-} else{
-    echo json_encode([
-        'success' => false,
-        'message' => "Verification failed" . $stmt->error
-    ]);
-}
 
 $stmt->close();
 $conn->close();
