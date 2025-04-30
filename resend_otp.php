@@ -35,7 +35,7 @@ if (!isset($_SESSION['pending_email']) || $_SESSION['pending_email'] !== $email 
 }
 
 $new_otp = rand(100000, 999999);
-$new_otp_expiry = time() + 10;
+$new_otp_expiry = time() + (3 * 60); // 3 minutes
 
 $_SESSION['pending_otp'] = $new_otp;
 $_SESSION['otp_expiry'] = $new_otp_expiry;

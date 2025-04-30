@@ -55,7 +55,7 @@ if ($result->num_rows > 0) {
 }
 // generates otp
 $otp = rand(100000, 999999);
-$otp_expiry = time() + 15; // 15 seconds
+$otp_expiry = time() + (3 * 60); // 15 seconds
 
 // store the data to session and not push to DB
 $_SESSION['pending_email'] = $email;

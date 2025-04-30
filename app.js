@@ -204,7 +204,11 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
 
           if(response.data.test_otp){
             sessionStorage.setItem("testOTP", response.data.test_otp);
-            sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+
+            // store otp expiry timestamp for countdown
+            if(response.data.otp_expiry){
+              sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+            }
           }
           
           // Redirect to OTP verification page after 1.5 seconds
@@ -231,19 +235,66 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
 });
 
 // OTP Verification Controller
-app.controller("VerifyOtpController", function ($scope, $location, $http) {
+app.controller("VerifyOtpController", function ($scope, $location, $http, $interval) {
   $scope.verificationData = {
     email: sessionStorage.getItem("pendingEmail") || sessionStorage.getItem("verifiedEmail") ||  "",
     otp: sessionStorage.getItem("testOTP") || "",
-    otp_expiry: sessionStorage.getItem("otp_expiry") || ""
   };
 
   $scope.errorMessage = "";
   $scope.successMessage = "";
+  $scope.countdownDisplay = "";
+  $scope.otpExpired = false;
+
+  var countdownTimer;
+
+  intializedCountdown();
   
   // If no pending email, redirect to registration
   if (!$scope.verificationData.email) {
     $location.path("/register");
+  }
+
+  function intializedCountdown(){
+    //clear any existing timer
+    if(countdownTimer){
+      $interval.cancel(countdownTimer);
+    }
+
+    var otpExpiry = sessionStorage.getItem("otp_expiry");
+    if(!otpExpiry){
+      $scope.countdownDisplay = "OTP expired";
+      $scope.otpExpired = true;
+      return;
+    }
+
+    //start count down
+    updateCountdown(otpExpiry);
+
+    countdownTimer = $interval(function(){
+      updateCountdown(otpExpiry);
+    }, 1000); // update every seconds
+  }
+
+  //update countdown display
+  function updateCountdown(expirytimestamp){
+      var currentTime = Math.floor(Date.now() / 1000); // current time in seconds
+      var timeleft = parseInt(expirytimestamp) - currentTime; 
+
+      if(timeleft <= 0){
+        $interval.cancel(countdownTimer);
+        $scope.countdownDisplay = "OTP expired";
+        $scope.otpExpired = true;
+        return;
+      }
+
+      // calculate minutes and seconds
+      var minutes = Math.floor(timeleft / 60);
+      var seconds = timeleft % 60;
+
+      // format display ( add leading zero if needed)
+      $scope.countdownDisplay = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+      $scope.otpExpired = false;
   }
 
   $scope.verifyOtp = function () {
@@ -251,10 +302,21 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
       $scope.errorMessage = "Please enter the OTP";
       return;
     }
-    
+
+    if($scope.otpExpired){
+      $scope.errorMessage = "OTP has expired. Please request a new one";
+      return;
+    }
+
     $http.post("verify_otp.php", $scope.verificationData)
       .then(function (response) {
         if (response.data.success) {
+
+          // cancel count down timer
+          if(countdownTimer){
+            $interval.cancel(countdownTimer);
+          }
+
           $scope.successMessage = "Email verified successfully!";
           $scope.errorMessage = "";
           
@@ -295,7 +357,9 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
             sessionStorage.setItem("testOTP", response.data.test_otp);
             sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
             $scope.verificationData.otp = response.data.test_otp;
-            $scope.verificationData.otp_expiry = response.data.otp_expiry;
+
+            // reset and start countdown with new  expiry
+            intializedCountdown(); 
           }
 
         } else {
@@ -311,8 +375,20 @@ app.controller("VerifyOtpController", function ($scope, $location, $http) {
   };
 
   $scope.goBack = function() {
+
+    //cancel countdown timer when navigating away
+    if(countdownTimer){
+      $interval.cancel(countdownTimer);
+    }
     $location.path("/register");
   };
+
+  // clean up when controller destroyed
+  $scope.$on('$destroy', function(){
+    if(countdownTimer){
+      $interval.cancel(countdownTimer);
+    }
+  });
 });
 
 // Complete Profile Controller
