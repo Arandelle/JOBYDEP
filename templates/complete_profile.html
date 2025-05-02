@@ -13,79 +13,52 @@
         {{successMessage}}
       </div>
       <div class="d-flex flex-column align-items-center justify-content-center p-4">
-        <form action="" name="profileForm" style="width: 380px" ng-submit="completeProfile()" novalidate>
-          <p class="text-center fw-bold">Complete Your Profile</p>
-          <p class="text-center text-secondary">
-            Your email has been verified! Please complete your profile to continue.
-            {{userData.email}}
+        <form action="" class="p-3" name="profileForm" style="width: 380px" ng-submit="completeProfile()" novalidate>
+          <p class="text-center fw-bold">Start your Registration</p>
+          <p class="text-center text-secondary d-flex flex-column lh-1">
+            <span>Your email has been verified:</span>
+            <span class="text-success fw-bold" ng-if="userData.email">{{userData.email}} ✅</span>
           </p>
           
           <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
             <input
               type="text"
-              class="form-control rounded-3"
+              class="form-control rounded-5 text-center"
               id="username"
               ng-model="userData.username"
-              placeholder="Choose a username"
+              placeholder="Username"
               required
               minlength="3"
             />
           </div>
           
           <div class="mb-3">
-            <label for="fullName" class="form-label">Full Name</label>
-            <input
-              type="text"
-              class="form-control rounded-3"
-              id="fullName"
-              ng-model="userData.fullName"
-              placeholder="Enter your full name"
-              required
-            />
-          </div>
-          
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
             <input
               type="password"
-              class="form-control rounded-3"
+              class="form-control rounded-5 text-center"
               id="password"
               ng-model="userData.password"
-              placeholder="Create a password"
+              placeholder="Password"
               required
               minlength="6"
             />
           </div>
           
           <div class="mb-3">
-            <label for="confirmPassword" class="form-label">Confirm Password</label>
             <input
               type="password"
-              class="form-control rounded-3"
+              class="form-control rounded-5 text-center"
               id="confirmPassword"
               ng-model="userData.confirmPassword"
-              placeholder="Confirm your password"
+              placeholder="Confirm Password"
               required
             />
-          </div>
-          
-          <div class="mb-3">
-            <label for="bio" class="form-label">Bio (Optional)</label>
-            <textarea
-              class="form-control rounded-3"
-              id="bio"
-              ng-model="userData.bio"
-              placeholder="Tell us about yourself"
-              rows="3"
-            ></textarea>
           </div>
           
           <div class="d-grid">
             <button
               type="submit"
-              class="btn text-white fw-bold"
-              style="background-color: #03045e;"
+              class="btn text-white fw-bold bg-primary rounded-5"
               ng-disabled="profileForm.$invalid"
               ng-class="profileForm.$valid ? 'btn-valid opacity-90' : 'btn-valid opacity-70'"
             >

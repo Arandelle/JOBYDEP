@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 header('Content-Type: application/json');
 
@@ -20,43 +20,22 @@ $data = json_decode(file_get_contents("php://input"), true);
 $email = isset($data['email']) ? trim($data['email']) : "";
 $username = isset($data['username']) ? trim($data['username']) : "";
 $password = isset($data['password']) ? $data['password'] : "";
-$fullName = isset($data['fullName']) ? trim($data['fullName']) : "";
-$bio = isset($data['bio']) ? trim($data['bio']) : "";
 
 // Validate input
-if(empty($email) || empty($username) || empty($password) || empty($fullName)) {
+if (empty($email) || empty($username) || empty($password)) {
     echo json_encode([
         'success' => false,
-        'message' => 'Email, username, password and full name are required'
+        'message' => 'Email, username, password and are required'
     ]);
     exit;
 }
-
-// Verify email exists and is verified
-$stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if($result->num_rows === 0) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Email not found'
-    ]);
-    $stmt->close();
-    $conn->close();
-    exit;
-}
-
-$user = $result->fetch_assoc();
-$stmt->close();
 
 // Check if username already exists
-$stmt = $conn->prepare("SELECT id FROM users WHERE username = ? AND id != ?");
-$stmt->bind_param("si", $username, $user['id']);
+$stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
-if($result->num_rows > 0) {
+if ($result->num_rows > 0) {
     echo json_encode([
         'success' => false,
         'message' => 'Username already exists'
@@ -66,18 +45,16 @@ if($result->num_rows > 0) {
     exit;
 }
 $stmt->close();
-
 // Hash password
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// Update user profile
-$stmt = $conn->prepare("UPDATE users SET username = ?, password = ?, full_name = ?, bio = ?, is_password_set = 1, profile_completed = 1 WHERE id = ?");
-$stmt->bind_param("ssssi", $username, $hashedPassword, $fullName, $bio, $user['id']);
+$insert = $conn->prepare("INSERT INTO users (email,username, password) VALUES (?,?,?)");
+$insert->bind_param("sss", $email, $username, $hashedPassword);
 
-if($stmt->execute()) {
+if ($insert->execute()) {
     // Clear session verified email
     unset($_SESSION['verified_email']);
-    
+
     echo json_encode([
         'success' => true,
         'message' => 'Profile completed successfully'
@@ -85,10 +62,9 @@ if($stmt->execute()) {
 } else {
     echo json_encode([
         'success' => false,
-        'message' => 'Profile update failed: ' . $stmt->error
+        'message' => 'Failed to update profile'
     ]);
 }
 
-$stmt->close();
+$insert->close();
 $conn->close();
-?>

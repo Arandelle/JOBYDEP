@@ -197,15 +197,6 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
       .then(function (response) {
         if (response.data.success) {
 
-          if(response.data.redirect && response.data.redirect === "complete-profile"){
-            sessionStorage.setItem("verifiedEmail", $scope.userData.email);
-              // Redirect to complete profile page after 1.5 seconds
-              setTimeout(function () {
-                $scope.$apply(function () {
-                  $location.path("/complete-profile");
-                });
-              }, 1500);
-          } else {
             $scope.successMessage = "OTP sent to your email successfully!";
             $scope.errorMessage = "";
             
@@ -227,7 +218,6 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
                 $location.path("/verify-otp");
               });
             }, 1500);
-          }
         } else {
           $scope.errorMessage = response.data.message || "Registration Failed";
           $scope.successMessage = "";
@@ -409,8 +399,6 @@ app.controller("CompleteProfileController", function ($scope, $location, $http, 
     username: "",
     password: "",
     confirmPassword: "",
-    fullName: "",
-    bio: ""
   };
 
   $scope.errorMessage = "";
@@ -429,7 +417,7 @@ app.controller("CompleteProfileController", function ($scope, $location, $http, 
       return;
     }
     
-    $http.post("complete_profile.php", $scope.userData)
+    AuthService.completeProfile($scope.userData)
       .then(function (response) {
         if (response.data.success) {
           $scope.successMessage = "Profile completed successfully!";

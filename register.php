@@ -40,35 +40,19 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Check if email already exists
-$stmt = $conn->prepare("SELECT id, is_password_set FROM users WHERE email = ?");
+$stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-
-    if($row['is_password_set'] ==1){
-        echo json_encode([
+       echo json_encode([
             'success' => false,
             'message' => 'Email already exists'
         ]);
         $stmt->close();
         $conn->close();
         exit;
-    } else {
-        echo json_encode([
-            'success' => true,
-            'message' => "Please complete your profile",
-            'redirect' => 'complete-profile',
-            'email' => $email
-        ]);
-
-        $_SESSION['verified_email'] = $email;
-
-        $stmt->close();
-        $conn->close();
-        exit;
-    }
 
 }
 // generates otp
