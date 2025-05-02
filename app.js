@@ -3,20 +3,19 @@ var app = angular.module("myApp", ["ngRoute"]);
 
 // configure the routes
 app.config(function ($routeProvider) {
-
   // check if user is authenticated
-  function checkAuth($location, AuthService){
-    if(AuthService.isAuthenticated()){
+  function checkAuth($location, AuthService) {
+    if (AuthService.isAuthenticated()) {
       return true;
-    } else{
+    } else {
       $location.path("/login");
       return false;
     }
   }
 
   // redirect user if authenticated
-  function redirectIfAuthenticated($location, AuthService){
-    if(AuthService.isAuthenticated()){
+  function redirectIfAuthenticated($location, AuthService) {
+    if (AuthService.isAuthenticated()) {
       $location.path("/content");
       return false;
     }
@@ -28,41 +27,41 @@ app.config(function ($routeProvider) {
     .when("/login", {
       templateUrl: "templates/login.html",
       controller: "LoginController",
-      resolve:{auth: redirectIfAuthenticated}
+      resolve: { auth: redirectIfAuthenticated },
     })
     // registration route
     .when("/register", {
       templateUrl: "templates/register.html",
       controller: "RegisterController",
-      resolve: {auth : redirectIfAuthenticated}
+      resolve: { auth: redirectIfAuthenticated },
     })
     .when("/verify-otp", {
       templateUrl: "templates/verify-otp.html",
-      controller: 'VerifyOtpController',
-      resolve: {auth: redirectIfAuthenticated}
+      controller: "VerifyOtpController",
+      resolve: { auth: redirectIfAuthenticated },
     })
     .when("/complete-profile", {
       templateUrl: "templates/complete_profile.html",
-      controller: 'CompleteProfileController',
-      resolve: {auth: redirectIfAuthenticated}
+      controller: "CompleteProfileController",
+      resolve: { auth: redirectIfAuthenticated },
     })
     // employer route
     .when("/employerRegister", {
       templateUrl: "templates/employerRegister.html",
       controller: "EmployerRegisterController",
-      resolve: {auth: redirectIfAuthenticated}
+      resolve: { auth: redirectIfAuthenticated },
     })
     // main content route (protected)
     .when("/content", {
       templateUrl: "templates/content.html",
       controller: "ContentController",
-      resolve: {auth: checkAuth}
+      resolve: { auth: checkAuth },
     })
     // Profile route
     .when("/profile", {
       templateUrl: "templates/profile.html",
       controller: "ProfileController",
-      resolve: {auth: checkAuth}
+      resolve: { auth: checkAuth },
     })
     // default routes redirect to login
     .otherwise({
@@ -81,7 +80,7 @@ app.factory("AuthService", function ($http) {
       // check local storage for auth token
       return localStorage.getItem("authToken") !== null;
     },
-    
+
     //login method - communicates with php backend
     login: function (credentials) {
       return $http.post("login.php", credentials).then(function (response) {
@@ -111,24 +110,24 @@ app.factory("AuthService", function ($http) {
     },
 
     // Verify OTP
-    verifyOtp: function(verificationData) {
+    verifyOtp: function (verificationData) {
       return $http.post("verify_otp.php", verificationData);
     },
-    
+
     // Resend OTP
-    resendOtp: function(email) {
+    resendOtp: function (email) {
       return $http.post("resend_otp.php", { email: email });
     },
-    
+
     // Complete profile
-    completeProfile: function(userData) {
+    completeProfile: function (userData) {
       return $http.post("complete_profile.php", userData);
     },
 
     // Employer registration
-    employerRegister: function (userData){
+    employerRegister: function (userData) {
       return $http.post("employerRegister.php", userData);
-    }
+    },
   };
 
   // check for existing token on startup
@@ -173,15 +172,15 @@ app.controller("LoginController", function ($scope, $location, AuthService) {
     $location.path("/register");
   };
 
-  $scope.goToEmployerRegister = function(){
+  $scope.goToEmployerRegister = function () {
     $location.path("/employerRegister");
-  }
+  };
 });
 
 // Registration Controller
 app.controller("RegisterController", function ($scope, $location, AuthService) {
   $scope.userData = {
-    email: ""
+    email: "",
   };
 
   $scope.errorMessage = "";
@@ -196,28 +195,27 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
     AuthService.register($scope.userData)
       .then(function (response) {
         if (response.data.success) {
+          $scope.successMessage = "OTP sent to your email successfully!";
+          $scope.errorMessage = "";
 
-            $scope.successMessage = "OTP sent to your email successfully!";
-            $scope.errorMessage = "";
-            
-            // Save email in session storage for verification step
-            sessionStorage.setItem("pendingEmail", $scope.userData.email);
-  
-            if(response.data.test_otp){
-              sessionStorage.setItem("testOTP", response.data.test_otp);
-  
-              // store otp expiry timestamp for countdown
-              if(response.data.otp_expiry){
-                sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
-              }
+          // Save email in session storage for verification step
+          sessionStorage.setItem("pendingEmail", $scope.userData.email);
+
+          if (response.data.test_otp) {
+            sessionStorage.setItem("testOTP", response.data.test_otp);
+
+            // store otp expiry timestamp for countdown
+            if (response.data.otp_expiry) {
+              sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
             }
-            
-            // Redirect to OTP verification page after 1.5 seconds
-            setTimeout(function () {
-              $scope.$apply(function () {
-                $location.path("/verify-otp");
-              });
-            }, 1500);
+          }
+
+          // Redirect to OTP verification page after 1.5 seconds
+          setTimeout(function () {
+            $scope.$apply(function () {
+              $location.path("/verify-otp");
+            });
+          }, 1500);
         } else {
           $scope.errorMessage = response.data.message || "Registration Failed";
           $scope.successMessage = "";
@@ -236,53 +234,58 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
 });
 
 // OTP Verification Controller
-app.controller("VerifyOtpController", function ($scope, $location, $http, $interval) {
-  $scope.verificationData = {
-    email: sessionStorage.getItem("pendingEmail") || sessionStorage.getItem("verifiedEmail") ||  "",
-    otp: sessionStorage.getItem("testOTP") || "",
-  };
+app.controller(
+  "VerifyOtpController",
+  function ($scope, $location, $http, $interval) {
+    $scope.verificationData = {
+      email:
+        sessionStorage.getItem("pendingEmail") ||
+        sessionStorage.getItem("verifiedEmail") ||
+        "",
+      otp: sessionStorage.getItem("testOTP") || "",
+    };
 
-  $scope.errorMessage = "";
-  $scope.successMessage = "";
-  $scope.countdownDisplay = "";
-  $scope.otpExpired = false;
+    $scope.errorMessage = "";
+    $scope.successMessage = "";
+    $scope.countdownDisplay = "";
+    $scope.otpExpired = false;
 
-  var countdownTimer;
+    var countdownTimer;
 
-  intializedCountdown();
-  
-  // If no pending email, redirect to registration
-  if (!$scope.verificationData.email) {
-    $location.path("/register");
-  }
+    intializedCountdown();
 
-  function intializedCountdown(){
-    //clear any existing timer
-    if(countdownTimer){
-      $interval.cancel(countdownTimer);
+    // If no pending email, redirect to registration
+    if (!$scope.verificationData.email) {
+      $location.path("/register");
     }
 
-    var otpExpiry = sessionStorage.getItem("otp_expiry");
-    if(!otpExpiry){
-      $scope.countdownDisplay = "OTP expired";
-      $scope.otpExpired = true;
-      return;
-    }
+    function intializedCountdown() {
+      //clear any existing timer
+      if (countdownTimer) {
+        $interval.cancel(countdownTimer);
+      }
 
-    //start count down
-    updateCountdown(otpExpiry);
+      var otpExpiry = sessionStorage.getItem("otp_expiry");
+      if (!otpExpiry) {
+        $scope.countdownDisplay = "OTP expired";
+        $scope.otpExpired = true;
+        return;
+      }
 
-    countdownTimer = $interval(function(){
+      //start count down
       updateCountdown(otpExpiry);
-    }, 1000); // update every seconds
-  }
 
-  //update countdown display
-  function updateCountdown(expirytimestamp){
+      countdownTimer = $interval(function () {
+        updateCountdown(otpExpiry);
+      }, 1000); // update every seconds
+    }
+
+    //update countdown display
+    function updateCountdown(expirytimestamp) {
       var currentTime = Math.floor(Date.now() / 1000); // current time in seconds
-      var timeleft = parseInt(expirytimestamp) - currentTime; 
+      var timeleft = parseInt(expirytimestamp) - currentTime;
 
-      if(timeleft <= 0){
+      if (timeleft <= 0) {
         $interval.cancel(countdownTimer);
         $scope.countdownDisplay = "OTP expired";
         $scope.otpExpired = true;
@@ -294,177 +297,220 @@ app.controller("VerifyOtpController", function ($scope, $location, $http, $inter
       var seconds = timeleft % 60;
 
       // format display ( add leading zero if needed)
-      $scope.countdownDisplay = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+      $scope.countdownDisplay =
+        minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
       $scope.otpExpired = false;
+    }
+
+    $scope.verifyOtp = function () {
+      if (!$scope.verificationData.otp) {
+        $scope.errorMessage = "Please enter the OTP";
+        return;
+      }
+
+      if ($scope.otpExpired) {
+        $scope.errorMessage = "OTP has expired. Please request a new one";
+        return;
+      }
+
+      $http
+        .post("verify_otp.php", $scope.verificationData)
+        .then(function (response) {
+          if (response.data.success) {
+            // cancel count down timer
+            if (countdownTimer) {
+              $interval.cancel(countdownTimer);
+            }
+
+            $scope.successMessage = "Email verified successfully!";
+            $scope.errorMessage = "";
+
+            // Clear the pending email
+            sessionStorage.removeItem("pendingEmail");
+            sessionStorage.removeItem("testOTP");
+            sessionStorage.removeItem("otp_expiry");
+            sessionStorage.setItem(
+              "verifiedEmail",
+              $scope.verificationData.email
+            );
+
+            // Redirect to complete profile page
+            setTimeout(function () {
+              $scope.$apply(function () {
+                $location.path("/complete-profile");
+              });
+            }, 1500);
+          } else {
+            console.error("ERror Occur: ", response.data.message);
+            $scope.errorMessage =
+              response.data.message || "Verification Failed";
+            $scope.successMessage = "";
+          }
+        })
+        .catch(function (error) {
+          console.error("Verification error:", error);
+          $scope.errorMessage =
+            "Server error occurred. Please try again later.";
+          $scope.successMessage = "";
+        });
+    };
+
+    $scope.resendOtp = function () {
+      $http
+        .post("resend_otp.php", { email: $scope.verificationData.email })
+        .then(function (response) {
+          if (response.data.success) {
+            $scope.successMessage = "New OTP sent successfully!";
+            $scope.errorMessage = "";
+
+            // save test OTP for display
+            if (response.data.test_otp) {
+              sessionStorage.setItem("testOTP", response.data.test_otp);
+              sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+              $scope.verificationData.otp = response.data.test_otp;
+
+              // reset and start countdown with new  expiry
+              intializedCountdown();
+            }
+          } else {
+            $scope.errorMessage =
+              response.data.message || "Failed to resend OTP";
+            $scope.successMessage = "";
+          }
+        })
+        .catch(function (error) {
+          console.error("Resend OTP error:", error);
+          $scope.errorMessage =
+            "Server error occurred. Please try again later.";
+          $scope.successMessage = "";
+        });
+    };
+
+    $scope.goBack = function () {
+      //cancel countdown timer when navigating away
+      if (countdownTimer) {
+        $interval.cancel(countdownTimer);
+      }
+      $location.path("/register");
+    };
+
+    // clean up when controller destroyed
+    $scope.$on("$destroy", function () {
+      if (countdownTimer) {
+        $interval.cancel(countdownTimer);
+      }
+    });
   }
-
-  $scope.verifyOtp = function () {
-    if (!$scope.verificationData.otp) {
-      $scope.errorMessage = "Please enter the OTP";
-      return;
-    }
-
-    if($scope.otpExpired){
-      $scope.errorMessage = "OTP has expired. Please request a new one";
-      return;
-    }
-
-    $http.post("verify_otp.php", $scope.verificationData)
-      .then(function (response) {
-        if (response.data.success) {
-
-          // cancel count down timer
-          if(countdownTimer){
-            $interval.cancel(countdownTimer);
-          }
-
-          $scope.successMessage = "Email verified successfully!";
-          $scope.errorMessage = "";
-          
-          // Clear the pending email
-          sessionStorage.removeItem("pendingEmail");
-          sessionStorage.removeItem("testOTP");
-          sessionStorage.removeItem("otp_expiry");
-          sessionStorage.setItem("verifiedEmail", $scope.verificationData.email);
-          
-          // Redirect to complete profile page
-          setTimeout(function () {
-            $scope.$apply(function () {
-              $location.path("/complete-profile");
-            });
-          }, 1500);
-        } else {  
-          console.error("ERror Occur: ", response.data.message)
-          $scope.errorMessage = response.data.message || "Verification Failed";
-          $scope.successMessage = "";
-        }
-      })
-      .catch(function (error) {
-        console.error("Verification error:", error);
-        $scope.errorMessage = "Server error occurred. Please try again later.";
-        $scope.successMessage = "";
-      });
-  };
-
-  $scope.resendOtp = function() {
-    $http.post("resend_otp.php", {email: $scope.verificationData.email})
-      .then(function(response) {
-        if (response.data.success) {
-          $scope.successMessage = "New OTP sent successfully!";
-          $scope.errorMessage = "";
-
-          // save test OTP for display
-          if(response.data.test_otp){
-            sessionStorage.setItem("testOTP", response.data.test_otp);
-            sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
-            $scope.verificationData.otp = response.data.test_otp;
-
-            // reset and start countdown with new  expiry
-            intializedCountdown(); 
-          }
-
-        } else {
-          $scope.errorMessage = response.data.message || "Failed to resend OTP";
-          $scope.successMessage = "";
-        }
-      })
-      .catch(function(error) {
-        console.error("Resend OTP error:", error);
-        $scope.errorMessage = "Server error occurred. Please try again later.";
-        $scope.successMessage = "";
-      });
-  };
-
-  $scope.goBack = function() {
-
-    //cancel countdown timer when navigating away
-    if(countdownTimer){
-      $interval.cancel(countdownTimer);
-    }
-    $location.path("/register");
-  };
-
-  // clean up when controller destroyed
-  $scope.$on('$destroy', function(){
-    if(countdownTimer){
-      $interval.cancel(countdownTimer);
-    }
-  });
-});
+);
 
 // Complete Profile Controller
-app.controller("CompleteProfileController", function ($scope, $location, $http, AuthService) {
-  $scope.userData = {
-    email: sessionStorage.getItem("verifiedEmail") || "",
-    username: "",
-    password: "",
-    confirmPassword: "",
-  };
+app.controller(
+  "CompleteProfileController",
+  function ($scope, $location, $http, AuthService) {
+    $scope.userData = {
+      email: sessionStorage.getItem("verifiedEmail") || "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+    };
 
-  $scope.errorMessage = "";
-  $scope.successMessage = "";
-  
-  // If no verified email, redirect to registration
-  if (!$scope.userData.email) {
-    $location.path("/register");
-    $scope.errorMessage = "Please Register First";
-  }
+    $scope.errorMessage = "";
+    $scope.successMessage = "";
 
-  $scope.completeProfile = function () {
-    // Validate password match
-    if ($scope.userData.password !== $scope.userData.confirmPassword) {
-      $scope.errorMessage = "Passwords do not match";
-      return;
+    // If no verified email, redirect to registration
+    if (!$scope.userData.email) {
+      $location.path("/register");
+      $scope.errorMessage = "Please Register First";
     }
-    
-    AuthService.completeProfile($scope.userData)
-      .then(function (response) {
-        if (response.data.success) {
-          $scope.successMessage = "Profile completed successfully!";
-          $scope.errorMessage = "";
-          
-          // Clear the verified email
-          sessionStorage.removeItem("verifiedEmail");
-          
-          // Redirect to login page
-          setTimeout(function () {
-            $scope.$apply(function () {
-              $location.path("/login");
-            });
-          }, 1500);
-        } else {
-          $scope.errorMessage = response.data.message || "Profile Update Failed";
+
+    $scope.completeProfile = function () {
+      // Validate password match
+      if ($scope.userData.password !== $scope.userData.confirmPassword) {
+        $scope.errorMessage = "Passwords do not match";
+        return;
+      }
+
+      AuthService.completeProfile($scope.userData)
+        .then(function (response) {
+          if (response.data.success) {
+            $scope.successMessage = "Profile completed successfully!";
+            $scope.errorMessage = "";
+
+            // Clear the verified email
+            sessionStorage.removeItem("verifiedEmail");
+
+            // Redirect to login page
+            setTimeout(function () {
+              $scope.$apply(function () {
+                $location.path("/login");
+              });
+            }, 1500);
+          } else {
+            $scope.errorMessage =
+              response.data.message || "Profile Update Failed";
+            $scope.successMessage = "";
+          }
+        })
+        .catch(function (error) {
+          console.error("Profile completion error:", error);
+          $scope.errorMessage =
+            "Server error occurred. Please try again later.";
           $scope.successMessage = "";
-        }
-      })
-      .catch(function (error) {
-        console.error("Profile completion error:", error);
-        $scope.errorMessage = "Server error occurred. Please try again later.";
-        $scope.successMessage = "";
-      });
-  };
-});
+        });
+    };
+  }
+);
 //Content controller
-app.controller("ContentController", function ($scope, $location, $http, AuthService) {
-  
-  $scope.profile = {}; // store the user profile
+app.controller(
+  "ContentController",
+  function ($scope, $location, $http, AuthService) {
+    $scope.profile = {}; // store the user profile
 
-  $http.get("profile.php").then(function (response){
-    if(response.data.success){
-      $scope.profile = response.data.profile;
-    }
-  });
-
-  $scope.viewProfile = function () {
-    $location.path("/profile");
-  };
-
-  $scope.logout = function () {
-    AuthService.logout().then(function () {
-      $location.path("/login");
+    // get the data from database using the php
+    $http.get("profile.php").then(function (response) {
+      if (response.data.success) {
+        $scope.profile = response.data.profile;
+      }
     });
-  };
-});
+
+    $scope.steps = [
+      { title: "Employment" },
+      { title: "Personal" },
+      { title: "Qualifications" },
+      { title: "Competencies" },
+      { title: "Visibility" },
+    ];
+
+    $scope.currentStep = 0;
+
+    $scope.nextStep = function(){
+      if($scope.currentStep < $scope.steps.length - 1){
+        $scope.currentStep++;
+      };
+    };
+
+    
+    $scope.prevStep = function(){
+      if($scope.currentStep > 0){
+        $scope.currentStep--;
+      }
+    }
+
+    $scope.goToStep = function(step){
+      $scope.currentStep = step
+    }
+
+    $scope.viewProfile = function () {
+      $location.path("/profile");
+    };
+
+    $scope.logout = function () {
+      AuthService.logout().then(function () {
+        $location.path("/login");
+      });
+    };
+  }
+);
 
 //Profile controller
 app.controller(
