@@ -23,7 +23,7 @@ if (empty($username) || empty($password)) {
 $conn = getDbConnection();
 
 //prepare sql statement to prevent sql injection
-$stmt = $conn->prepare("SELECT id, username, password,full_name,email FROM users WHERE username = ? AND is_active = 1");
+$stmt = $conn->prepare("SELECT id, username, password,full_name,email FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();

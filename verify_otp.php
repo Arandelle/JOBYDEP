@@ -79,7 +79,7 @@ if($_SESSION['otp_expiry'] < $current_time){
 }
 
 // check if email is already exists in DB
-$stmt = $conn->prepare("SELECT id, is_verified FROM users WHERE email = ?");
+$stmt = $conn->prepare("SELECT id, is_password_set FROM users WHERE email = ?");
 $stmt->bind_param('s', $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -88,13 +88,7 @@ $result = $stmt->get_result();
         // email exists
         $row = $result->fetch_assoc();
 
-        if($row['is_verified'] == 0){
-            // update is_verified
-            $update = $conn->prepare("UPDATE users SET is_verified = 1 WHERE email = ?");
-            $update->bind_param("s", $email);
-            $update->execute();
-            $update->close();
-        } else{
+        if($row['is_password_set'] == 1){
             echo json_encode([
                 'success' => false,
                 'message' => "Email is already verified"
@@ -102,7 +96,7 @@ $result = $stmt->get_result();
             exit;
         }
     } else {
-        $insert = $conn->prepare("INSERT INTO users (email, is_verified) VALUES (?, 1)");
+        $insert = $conn->prepare("INSERT INTO users (email) VALUES (?)");
         $insert->bind_param("s", $email);
         $insert->execute();
         $insert->close();

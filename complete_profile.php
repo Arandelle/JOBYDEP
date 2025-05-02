@@ -33,7 +33,7 @@ if(empty($email) || empty($username) || empty($password) || empty($fullName)) {
 }
 
 // Verify email exists and is verified
-$stmt = $conn->prepare("SELECT id, is_verified FROM users WHERE email = ?");
+$stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -50,15 +50,6 @@ if($result->num_rows === 0) {
 
 $user = $result->fetch_assoc();
 $stmt->close();
-
-if(!$user['is_verified']) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Email not verified. Please verify your email first.'
-    ]);
-    $conn->close();
-    exit;
-}
 
 // Check if username already exists
 $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? AND id != ?");
@@ -80,7 +71,7 @@ $stmt->close();
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
 // Update user profile
-$stmt = $conn->prepare("UPDATE users SET username = ?, password = ?, full_name = ?, bio = ?, is_verified = 1, profile_completed = 1 WHERE id = ?");
+$stmt = $conn->prepare("UPDATE users SET username = ?, password = ?, full_name = ?, bio = ?, is_password_set = 1, profile_completed = 1 WHERE id = ?");
 $stmt->bind_param("ssssi", $username, $hashedPassword, $fullName, $bio, $user['id']);
 
 if($stmt->execute()) {

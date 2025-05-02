@@ -196,27 +196,38 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
     AuthService.register($scope.userData)
       .then(function (response) {
         if (response.data.success) {
-          $scope.successMessage = "OTP sent to your email successfully!";
-          $scope.errorMessage = "";
-          
-          // Save email in session storage for verification step
-          sessionStorage.setItem("pendingEmail", $scope.userData.email);
 
-          if(response.data.test_otp){
-            sessionStorage.setItem("testOTP", response.data.test_otp);
-
-            // store otp expiry timestamp for countdown
-            if(response.data.otp_expiry){
-              sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+          if(response.data.redirect && response.data.redirect === "complete-profile"){
+            sessionStorage.setItem("verifiedEmail", $scope.userData.email);
+              // Redirect to complete profile page after 1.5 seconds
+              setTimeout(function () {
+                $scope.$apply(function () {
+                  $location.path("/complete-profile");
+                });
+              }, 1500);
+          } else {
+            $scope.successMessage = "OTP sent to your email successfully!";
+            $scope.errorMessage = "";
+            
+            // Save email in session storage for verification step
+            sessionStorage.setItem("pendingEmail", $scope.userData.email);
+  
+            if(response.data.test_otp){
+              sessionStorage.setItem("testOTP", response.data.test_otp);
+  
+              // store otp expiry timestamp for countdown
+              if(response.data.otp_expiry){
+                sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+              }
             }
+            
+            // Redirect to OTP verification page after 1.5 seconds
+            setTimeout(function () {
+              $scope.$apply(function () {
+                $location.path("/verify-otp");
+              });
+            }, 1500);
           }
-          
-          // Redirect to OTP verification page after 1.5 seconds
-          setTimeout(function () {
-            $scope.$apply(function () {
-              $location.path("/verify-otp");
-            });
-          }, 1500);
         } else {
           $scope.errorMessage = response.data.message || "Registration Failed";
           $scope.successMessage = "";
