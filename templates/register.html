@@ -6,6 +6,9 @@
     >
       <img src="/angularjs/images/logo.png" alt="logo" height="71" />
     </div>
+    <div class="alert alert-primary m-2 mb-0" ng-if="emailMessage">
+      {{emailMessage}}
+    </div>
     <div class="alert alert-danger m-2 mb-0" ng-if="errorMessage">
         {{errorMessage}}
       </div>

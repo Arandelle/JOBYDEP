@@ -194,11 +194,11 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
 
   $scope.validateEmail = function(){
     if(!$scope.test($scope.userData.email)){
-      $scope.errorMessage = "Invalid email input";
+      $scope.emailMessage = "Input valid email format";
       $scope.successMessage = "";
       $scope.validate = false;
     } else {
-      $scope.errorMessage = "";
+      $scope.emailMessage = "";
       $scope.successMessage = "";
       $scope.validate = true;
     };
@@ -434,7 +434,7 @@ app.controller(
       confirmPassword: "",
     };
 
-    $scope.errorMessage = "";
+    $scope.errorMessage = "";   
     $scope.successMessage = "";
 
     // If no verified email, redirect to registration
