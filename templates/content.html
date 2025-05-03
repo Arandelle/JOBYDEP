@@ -1,3 +1,104 @@
+<style>
+  .stepper-wrapper {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      position: relative;
+  }
+
+  .stepper-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      cursor: pointer;
+  }
+
+  .stepper-item::before {
+      position: absolute;
+      content: "";
+      border-bottom: 2px solid #ccc;
+      width: 100%;
+      top: 20px;
+      left: -50%;
+      z-index: 2;
+  }
+
+  .stepper-item::after {
+      position: absolute;
+      content: "";
+      border-bottom: 2px solid #ccc;
+      width: 100%;
+      top: 20px;
+      left: 50%;
+      z-index: 2;
+  }
+
+  .stepper-item .step-counter {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+      margin-bottom: 6px;
+      transition: all 0.3s ease;
+  }
+
+  .stepper-item .step-name {
+      color: #ccc;
+      font-size: 14px;
+      transition: all 0.3s ease;
+  }
+
+  .stepper-item.active .step-counter {
+      background-color: #ffc107; /* Bootstrap warning color */
+      color: #03045e;
+  }
+
+  .stepper-item.active .step-name {
+      color: #ffc107;
+      font-weight: bold;
+  }
+
+  .stepper-item.completed .step-counter {
+      background-color: #28a745; /* Bootstrap success color */
+      color: white;
+  }
+
+  .stepper-item.completed .step-name {
+      color: #28a745;
+  }
+
+  .stepper-item.completed::after,
+  .stepper-item.completed::before {
+      border-color: #28a745;
+  }
+
+  .stepper-item:first-child::before {
+      content: none;
+  }
+
+  .stepper-item:last-child::after {
+      content: none;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+      .step-name {
+          font-size: 12px;
+      }
+
+      .step-counter {
+          width: 30px;
+          height: 30px;
+      }
+  }
+</style>
 <div class="card min-vh-100 d-flex py-5 px-2">
   <div
     class="card-header d-flex flex-row align-items-center justify-content-end gap-4"
@@ -7,20 +108,16 @@
   </div>
 
   <!-- Stepper Header -->
-  <div
-    class="d-flex justify-content-between p-4"
-    style="background-color: #03045e"
-  >
-    <button
-      class="btn text-center flex-fill"
-      ng-repeat="step in steps"
-      ng-class="currentStep === $index ? 'fw-bold text-primary' : 'text-warning'"
-      ng-click="goToStep($index)"
-    >
-      <span>{{step.title}}</span>
-</button>
-  </div>
-
+  <div class="stepper-wrapper p-4" style="background-color: #03045e">
+    <div class="stepper-item" 
+         ng-repeat="step in steps" 
+         ng-class="{'active': currentStep === $index, 'completed': currentStep > $index}">
+        <div class="step-counter text-dark fa" ng-click="goToStep($index)" ng-class="steps[$index].icon"></div>
+        <div class="step-name">{{step.title}}
+        </div>
+    </div>
+</div>
+  <!-- card-body-->
   <div class="card-body shadow pb-0">
     <!-- First step modal-->
     <div ng-switch="currentStep" class="py-4">
@@ -234,10 +331,15 @@
           <div class="col">
             <p class="fw-bold">Other relevant Info</p>
             <div class="d-flex flex-column justify-content-center gap-2">
-              <label for=""><input type="checkbox"> Available Immediately</label>
-              <label for=""><input type="checkbox"> Are you an OFW?</label>
-              <label for=""><input type="checkbox"> Do you have a driver's licence?</label>
-            </div> 
+              <label for=""
+                ><input type="checkbox" /> Available Immediately</label
+              >
+              <label for=""><input type="checkbox" /> Are you an OFW?</label>
+              <label for=""
+                ><input type="checkbox" /> Do you have a driver's
+                licence?</label
+              >
+            </div>
           </div>
         </div>
       </div>
@@ -250,15 +352,21 @@
             <p class="text-secondary pb-2">
               Provide your most recent or highest level of education.
             </p>
-            <label for="" class="fw-bold"><input type="checkbox" class="me-3">I have an educational background</label>
+            <label for="" class="fw-bold"
+              ><input type="checkbox" class="me-3" />I have an educational
+              background</label
+            >
           </div>
           <!-- 3rd step 2nd col-->
           <div class="col">
-              <p class="text-primary h5 fw-bold my-4">Work Experience</p>
+            <p class="text-primary h5 fw-bold my-4">Work Experience</p>
             <p class="text-secondary pb-2">
               Tell us about your previous job experience (if any).
             </p>
-            <label for="" class="fw-bold"><input type="checkbox" class="me-3">I have past work experience</label>
+            <label for="" class="fw-bold"
+              ><input type="checkbox" class="me-3" />I have past work
+              experience</label
+            >
           </div>
         </div>
       </div>
@@ -267,14 +375,34 @@
         <div class="row">
           <!-- 4th step first columm-->
           <div class="col">
-            <p class="text-primary h5 fw-bold my-4">Show Off Your Competencies</p>
-            <p class="text-secondary pb-2">
-              Other Skills
+            <p class="text-primary h5 fw-bold my-4">
+              Show Off Your Competencies
             </p>
-            <label for="" class="fw-bold"><input type="checkbox" class="me-3">Do you have other skills?</label>
+            <p class="text-primary fw-bold fs-6 pb-2">Other Skills</p>
+            <label for="" class="fw-bold"
+              ><input type="checkbox" class="me-3" />Do you have other
+              skills?</label
+            >
           </div>
+          <!--4th step 2nd column-->
           <div class="col">
-            
+            <p class="text-primary h4 fw-bold my-4 opacity-0">
+              Show Off Your Competencies
+            </p>
+            <p class="text-primary fw-bold fs-6 pb-2">Language Proficiency</p>
+            <p class="text-primary fw-bold fs-6 pb-2">Primary Language</p>
+            <select
+            name=""
+            id=""
+            class="form-control form-control-sm"
+            style="cursor: pointer"
+          >
+            <option value="english">English</option>
+          </select>
+            <p class="text-secondary fw-bold py-3">Verbal Proficiency</p>
+            <div class="gap-2 d-flex">
+              <div ng-repeat="star in [].constructor(10) track by $index"><input type="checkbox" ng-value="$index + 1"></div>
+            </div>
           </div>
         </div>
       </div>
