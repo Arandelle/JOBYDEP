@@ -494,11 +494,11 @@ app.controller(
     });
 
     $scope.steps = [
-      { title: "Employment", icon: "fa-briefcase" },
-      { title: "Personal", icon: "fa-user-o"},
-      { title: "Qualifications", icon: "fa-mortar-board" },
-      { title: "Competencies", icon: "fa-flash" },
-      { title: "Visibility", icon: "fa-check-circle-o" },
+      { title: "Employment", icon: "fa fa-briefcase" },
+      { title: "Personal", icon: "fa fa-user-o"},
+      { title: "Qualifications", icon: "fa fa-mortar-board" },
+      { title: "Competencies", icon: "fa fa-flash" },
+      { title: "Visibility", icon: "fa fa-check-circle-o" },
     ];
 
     $scope.currentStep = 0;

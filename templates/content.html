@@ -1,104 +1,80 @@
 <style>
-  .stepper-wrapper {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      position: relative;
-  }
-
   .stepper-item {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 1;
-      cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1
   }
 
-  .stepper-item::before {
-      position: absolute;
-      content: "";
-      border-bottom: 2px solid #ccc;
-      width: 100%;
-      top: 20px;
-      left: -50%;
-      z-index: 2;
+  .stepper-item::before{
+    content: "";
+    position: absolute;
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: -50%;
+    z-index: 2;
   }
 
-  .stepper-item::after {
-      position: absolute;
-      content: "";
-      border-bottom: 2px solid #ccc;
-      width: 100%;
-      top: 20px;
-      left: 50%;
-      z-index: 2;
+  .stepper-item::after{
+    content: "";
+    position: absolute;
+    border-bottom: 2px solid #ccc;
+    width: 100%;
+    top: 20px;
+    left: 50%;
+    z-index: 2;
   }
 
-  .stepper-item .step-counter {
-      position: relative;
-      z-index: 5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #ccc;
-      margin-bottom: 6px;
-      transition: all 0.3s ease;
+  .stepper-item .step-icon {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-bottom: 6px;
+    cursor: pointer;
   }
 
-  .stepper-item .step-name {
-      color: #ccc;
-      font-size: 14px;
-      transition: all 0.3s ease;
+  .stepper-item.active {
+    font-weight: bold;
   }
 
-  .stepper-item.active .step-counter {
-      background-color: #ffc107; /* Bootstrap warning color */
-      color: #03045e;
+  .stepper-item.active .step-icon {
+    background-color: #ffc107 ;
+    color: white;
   }
 
-  .stepper-item.active .step-name {
-      color: #ffc107;
-      font-weight: bold;
+  .stepper-item.active .step-title{
+    color: #ffc107;
   }
 
-  .stepper-item.completed .step-counter {
-      background-color: #28a745; /* Bootstrap success color */
-      color: white;
-  }
+  .stepper-item.completed .step-icon {
+            background-color: #0d6efd ;
+            color: white;
+        }
 
-  .stepper-item.completed .step-name {
-      color: #28a745;
+  .stepper-item.completed .step-title {
+    color: #0d6efd ;
   }
 
   .stepper-item.completed::after,
-  .stepper-item.completed::before {
-      border-color: #28a745;
+  .stepper-item.completed::before{
+    border-color: #0d6efd;
   }
 
-  .stepper-item:first-child::before {
-      content: none;
+  .stepper-item:first-child::before,
+  .stepper-item:last-child::after{
+    content:  none;
   }
 
-  .stepper-item:last-child::after {
-      content: none;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-      .step-name {
-          font-size: 12px;
-      }
-
-      .step-counter {
-          width: 30px;
-          height: 30px;
-      }
-  }
 </style>
+
 <div class="card min-vh-100 d-flex py-5 px-2">
   <div
     class="card-header d-flex flex-row align-items-center justify-content-end gap-4"
@@ -108,15 +84,22 @@
   </div>
 
   <!-- Stepper Header -->
-  <div class="stepper-wrapper p-4" style="background-color: #03045e">
+  <!-- <div class="stepper-wrapper p-4" style="background-color: #03045e">
     <div class="stepper-item" 
          ng-repeat="step in steps" 
          ng-class="{'active': currentStep === $index, 'completed': currentStep > $index}">
-        <div class="step-counter text-dark fa" ng-click="goToStep($index)" ng-class="steps[$index].icon"></div>
+        <div class="step-counter text-dark" ng-click="goToStep($index)" ng-class="step.icon"></div>
         <div class="step-name">{{step.title}}
         </div>
     </div>
-</div>
+</div> -->
+
+  <div class="d-flex justify-content-between position-relative p-4 rounded-3" style="background-color: #03045e;">
+    <div class="stepper-item" ng-repeat="step in steps"  ng-class="{'active': currentStep === $index, 'completed': currentStep > $index}">
+      <div class="step-icon" ng-click="goToStep($index)" ng-class="step.icon"></div>
+      <div class="step-title">{{step.title}}</div>
+    </div>
+  </div>
   <!-- card-body-->
   <div class="card-body shadow pb-0">
     <!-- First step modal-->
