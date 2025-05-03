@@ -28,6 +28,7 @@
             id="email"
             ng-model="userData.email"
             placeholder="Enter your email address"
+            ng-change="validateEmail()"
             required
           />
         </div>
@@ -36,7 +37,7 @@
             type="submit"
             class="btn text-white fw-bold"
             style="background-color: #03045e;"
-            ng-disabled="registerForm.$invalid"
+            ng-disabled="!validate"
             ng-class="registerForm.$valid ? 'btn-valid opacity-90' : 'btn-valid opacity-70'"
           >
             Send OTP

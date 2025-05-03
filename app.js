@@ -186,46 +186,66 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
   $scope.errorMessage = "";
   $scope.successMessage = "";
 
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  $scope.test = function (email) {
+    return emailRegex.test(email);
+  };
+
+  $scope.validateEmail = function(){
+    if(!$scope.test($scope.userData.email)){
+      $scope.errorMessage = "Invalid email input";
+      $scope.successMessage = "";
+      $scope.validate = false;
+    } else {
+      $scope.errorMessage = "";
+      $scope.successMessage = "";
+      $scope.validate = true;
+    };
+  }
+
   $scope.register = function () {
     if (!$scope.userData.email) {
       $scope.errorMessage = "Email is required";
       return;
     }
-    // send registration request to PHP server
-    AuthService.register($scope.userData)
-      .then(function (response) {
-        if (response.data.success) {
-          $scope.successMessage = "OTP sent to your email successfully!";
-          $scope.errorMessage = "";
+      // send registration request to PHP server
+      AuthService.register($scope.userData)
+        .then(function (response) {
+          if (response.data.success) {
+            $scope.successMessage = "OTP sent to your email successfully!";
+            $scope.errorMessage = "";
 
-          // Save email in session storage for verification step
-          sessionStorage.setItem("pendingEmail", $scope.userData.email);
+            // Save email in session storage for verification step
+            sessionStorage.setItem("pendingEmail", $scope.userData.email);
 
-          if (response.data.test_otp) {
-            sessionStorage.setItem("testOTP", response.data.test_otp);
+            if (response.data.test_otp) {
+              sessionStorage.setItem("testOTP", response.data.test_otp);
 
-            // store otp expiry timestamp for countdown
-            if (response.data.otp_expiry) {
-              sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+              // store otp expiry timestamp for countdown
+              if (response.data.otp_expiry) {
+                sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
+              }
             }
-          }
 
-          // Redirect to OTP verification page after 1.5 seconds
-          setTimeout(function () {
-            $scope.$apply(function () {
-              $location.path("/verify-otp");
-            });
-          }, 1500);
-        } else {
-          $scope.errorMessage = response.data.message || "Registration Failed";
+            // Redirect to OTP verification page after 1.5 seconds
+            setTimeout(function () {
+              $scope.$apply(function () {
+                $location.path("/verify-otp");
+              });
+            }, 1500);
+          } else {
+            $scope.errorMessage =
+              response.data.message || "Registration Failed";
+            $scope.successMessage = "";
+          }
+        })
+        .catch(function (error) {
+          console.error("Registration error:", error);
+          $scope.errorMessage =
+            "Server error occurred. Please try again later.";
           $scope.successMessage = "";
-        }
-      })
-      .catch(function (error) {
-        console.error("Registration error:", error);
-        $scope.errorMessage = "Server error occurred. Please try again later.";
-        $scope.successMessage = "";
-      });
+        });
   };
 
   $scope.goToLogin = function () {
@@ -483,22 +503,21 @@ app.controller(
 
     $scope.currentStep = 0;
 
-    $scope.nextStep = function(){
-      if($scope.currentStep < $scope.steps.length - 1){
+    $scope.nextStep = function () {
+      if ($scope.currentStep < $scope.steps.length - 1) {
         $scope.currentStep++;
-      };
+      }
     };
 
-    
-    $scope.prevStep = function(){
-      if($scope.currentStep > 0){
+    $scope.prevStep = function () {
+      if ($scope.currentStep > 0) {
         $scope.currentStep--;
       }
-    }
+    };
 
-    $scope.goToStep = function(step){
-      $scope.currentStep = step
-    }
+    $scope.goToStep = function (step) {
+      $scope.currentStep = step;
+    };
 
     $scope.viewProfile = function () {
       $location.path("/profile");
