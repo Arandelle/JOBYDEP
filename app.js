@@ -534,6 +534,9 @@ app.controller(
 
     }
 
+    // for default check of input checkbox
+    $scope.isVisible = true;
+
     $scope.viewProfile = function () {
       $location.path("/profile");
     };
