@@ -192,8 +192,8 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
     return emailRegex.test(email);
   };
 
-  $scope.validateEmail = function(){
-    if(!$scope.test($scope.userData.email)){
+  $scope.validateEmail = function () {
+    if (!$scope.test($scope.userData.email)) {
       $scope.emailMessage = "Input valid email format";
       $scope.successMessage = "";
       $scope.validate = false;
@@ -201,51 +201,49 @@ app.controller("RegisterController", function ($scope, $location, AuthService) {
       $scope.emailMessage = "";
       $scope.successMessage = "";
       $scope.validate = true;
-    };
-  }
+    }
+  };
 
   $scope.register = function () {
     if (!$scope.userData.email) {
       $scope.errorMessage = "Email is required";
       return;
     }
-      // send registration request to PHP server
-      AuthService.register($scope.userData)
-        .then(function (response) {
-          if (response.data.success) {
-            $scope.successMessage = "OTP sent to your email successfully!";
-            $scope.errorMessage = "";
+    // send registration request to PHP server
+    AuthService.register($scope.userData)
+      .then(function (response) {
+        if (response.data.success) {
+          $scope.successMessage = "OTP sent to your email successfully!";
+          $scope.errorMessage = "";
 
-            // Save email in session storage for verification step
-            sessionStorage.setItem("pendingEmail", $scope.userData.email);
+          // Save email in session storage for verification step
+          sessionStorage.setItem("pendingEmail", $scope.userData.email);
 
-            if (response.data.test_otp) {
-              sessionStorage.setItem("testOTP", response.data.test_otp);
+          if (response.data.test_otp) {
+            sessionStorage.setItem("testOTP", response.data.test_otp);
 
-              // store otp expiry timestamp for countdown
-              if (response.data.otp_expiry) {
-                sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
-              }
+            // store otp expiry timestamp for countdown
+            if (response.data.otp_expiry) {
+              sessionStorage.setItem("otp_expiry", response.data.otp_expiry);
             }
-
-            // Redirect to OTP verification page after 1.5 seconds
-            setTimeout(function () {
-              $scope.$apply(function () {
-                $location.path("/verify-otp");
-              });
-            }, 1500);
-          } else {
-            $scope.errorMessage =
-              response.data.message || "Registration Failed";
-            $scope.successMessage = "";
           }
-        })
-        .catch(function (error) {
-          console.error("Registration error:", error);
-          $scope.errorMessage =
-            "Server error occurred. Please try again later.";
+
+          // Redirect to OTP verification page after 1.5 seconds
+          setTimeout(function () {
+            $scope.$apply(function () {
+              $location.path("/verify-otp");
+            });
+          }, 1500);
+        } else {
+          $scope.errorMessage = response.data.message || "Registration Failed";
           $scope.successMessage = "";
-        });
+        }
+      })
+      .catch(function (error) {
+        console.error("Registration error:", error);
+        $scope.errorMessage = "Server error occurred. Please try again later.";
+        $scope.successMessage = "";
+      });
   };
 
   $scope.goToLogin = function () {
@@ -434,7 +432,7 @@ app.controller(
       confirmPassword: "",
     };
 
-    $scope.errorMessage = "";   
+    $scope.errorMessage = "";
     $scope.successMessage = "";
 
     // If no verified email, redirect to registration
@@ -495,7 +493,7 @@ app.controller(
 
     $scope.steps = [
       { title: "Employment", icon: "fa fa-briefcase" },
-      { title: "Personal", icon: "fa fa-user-o"},
+      { title: "Personal", icon: "fa fa-user-o" },
       { title: "Qualifications", icon: "fa fa-mortar-board" },
       { title: "Competencies", icon: "fa fa-flash" },
       { title: "Visibility", icon: "fa fa-check-circle-o" },
@@ -519,27 +517,45 @@ app.controller(
       $scope.currentStep = step;
     };
 
+    // list of highet education attainment
+    $scope.educationalList = [
+      { title: "Primary Education"},
+      { title: "Secondary Education"},
+      { title: "Vocational Course", label: "Vocational course", placeholder: "e.g., Information Technology" },
+      { title: "Tertiary Education", label: "Field of study", placeholder: "Enter field of study" },
+      { title: "Masters Degree", label: "Master's degree program", placeholder: "e.g., Master's of Information Technology" },
+      { title: "Doctorate", label: "Doctorate program", placeholder: "e.g., Ph.D. in Compute Science" }
+    ];
+    
+    // has default value to the graduated
+    $scope.isGraduated = true;
+
+    //function to get the label of the selected education
+    $scope.getEducationLabel = function(title){
+      return $scope.educationalList.find(item => item.title === title);
+    };
+
+    $scope.hasExtraLabel = function(title){
+      const item = $scope.getEducationLabel(title);
+      return item && item.label;
+    }
+
+
     $scope.ratings = {
-      verbalRate : 0,
-      writtenRate : 0,
-      verbalPercentage: '0%',
-      writtenPercentage: '0%'
-    }
+      verbalRate: 0,
+      writtenRate: 0,
+      verbalPercentage: "0%",
+      writtenPercentage: "0%",
+    };
 
-    $scope.handleRate = function(field, index){
-
+    $scope.handleRate = function (field, index) {
       $scope.ratings[field] = index + 1;
-      const percentageField = field.replace('Rate', 'Percentage');
-      $scope.ratings[percentageField] = ($scope.ratings[field] * 10) + '%';
-
-    }
+      const percentageField = field.replace("Rate", "Percentage");
+      $scope.ratings[percentageField] = $scope.ratings[field] * 10 + "%";
+    };
 
     // for default check of input checkbox
     $scope.isVisible = true;
-
-    $scope.viewProfile = function () {
-      $location.path("/profile");
-    };
 
     $scope.logout = function () {
       AuthService.logout().then(function () {

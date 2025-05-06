@@ -55,6 +55,10 @@
     color: white;
   }
 
+  .stepper-item.active::before {
+    border-color: #6c88ff;
+  }
+
   .stepper-item.completed::after,
   .stepper-item.completed::before {
     border-color: #6c88ff;
@@ -63,6 +67,10 @@
   .stepper-item:first-child::before,
   .stepper-item:last-child::after {
     content: none;
+  }
+
+  select{
+    cursor: pointer;
   }
 </style>
 
@@ -73,7 +81,9 @@
     <p class="fw-bold mb-0 uppercase text-capitalize">
       Welcome, {{profile.username}}
     </p>
-    <buton class="btn btn-outline-danger" ng-click="logout()">Logout</buton>
+    <buton class="btn btn-outline-danger" ng-click="logout()">
+      <span class="fa fa-sign-out me-2"></span>Logout</buton
+    >
   </div>
   <!--Stepper header-->
   <div
@@ -112,14 +122,15 @@
               class="fw-semibold text-dark opacity-75 py-2"
               >Desired Position</label
             >
-            <input type="text" class="form-control form-control-sm rounded-3" />
+            <input type="text" class="form-control  rounded-3" placeholder="Enter Desired Position"/>
             <label for="employment_type" class="fw-semibold text-secondary py-2"
               >Employment Type</label
             >
             <select
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control"
+              
             >
+              <option disabled selected>--SELECT EMPLOYMENT--</option>
               <option value="permanent">Permanent</option>
               <option value="contratual">Contractual</option>
               <option value="on-the-job-training">On-the-Job Training</option>
@@ -131,7 +142,8 @@
             >
             <input
               type="number"
-              class="form-control form-control-sm rounded-3"
+              class="form-control  rounded-3"
+              placeholder="e.g 5"
             />
             <label for="employer_status" class="fw-semibold text-secondary py-2"
               >Employment Status</label
@@ -139,9 +151,9 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
             >
+              <option value="" disabled selected>--SELECT EMPLOYMENT STATUS--</option>
               <option value="part_time">Part-time</option>
               <option value="full_time">Full-time</option>
             </select>
@@ -151,9 +163,9 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
             >
+              <option value="" disabled selected>-- SELECT WORK SCHEDULE --</option>
               <option value="day_shift">Day Shift</option>
               <option value="night_shift">Nigth Shift</option>
               <option value="hybrid">Hybrid</option>
@@ -165,9 +177,9 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
             >
+              <option value="" disabled selected>--SELECT EMPLOYER TYPE--</option>
               <option value="private">Private</option>
               <option value="corporate">Corporate</option>
               <option value="organizational">Organizational</option>
@@ -178,7 +190,7 @@
             >
             <input
               type="number"
-              class="form-control form-control-sm rounded-3"
+              class="form-control  rounded-3"
               placeholder="e.g 30000"
             />
           </div>
@@ -191,8 +203,8 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
+              
             >
               <option value="ph">Philippines</option>
             </select>
@@ -202,8 +214,8 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
+              
             >
               <option value="cavite">Cavite</option>
             </select>
@@ -213,8 +225,8 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
+              
             >
               <option value="tanza">Tanza</option>
             </select>
@@ -230,17 +242,17 @@
             <label for="firstname" class="fw-semibold text-secondary py-2"
               >Firstname</label
             >
-            <input type="text" class="form-control form-control-sm rounded-3" />
+            <input type="text" class="form-control  rounded-3" />
             <label for="lastname" class="fw-semibold text-secondary py-2"
               >Lastname</label
             >
-            <input type="text" class="form-control form-control-sm rounded-3" />
+            <input type="text" class="form-control  rounded-3" />
             <label for="age" class="fw-semibold text-secondary py-2">Age</label>
-            <input type="text" class="form-control form-control-sm rounded-3" />
+            <input type="text" class="form-control  rounded-3" />
             <label for="gender" class="fw-semibold text-secondary py-2"
               >Gender</label
             >
-            <select name="" id="" class="form-control form-control-sm">
+            <select name="" id="" class="form-control ">
               <option value="" disabled>--SELECT GENDER--</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -249,7 +261,7 @@
             <label for="phone_numbers" class="fw-semibold text-secondary py-2">
               Mobile Phone Number</label
             >
-            <input type="number" class="form-control form-control-sm" />
+            <input type="number" class="form-control " />
           </div>
           <!-- 2nd step 2nd column-->
           <div class="col">
@@ -257,19 +269,19 @@
             <label for="address1" class="fw-semibold text-secondary py-2"
               >Address 1</label
             >
-            <input type="text" class="form-control form-control-sm rounded-3" />
+            <input type="text" class="form-control  rounded-3" />
             <label for="address2" class="fw-semibold text-secondary py-2"
               >Address 2 (optional)</label
             >
-            <input type="text" class="form-control form-control-sm rounded-3" />
+            <input type="text" class="form-control  rounded-3" />
             <label for="country" class="fw-semibold text-secondary py-2"
               >Country</label
             >
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
+              
             >
               <option value="ph">Philippines</option>
             </select>
@@ -279,8 +291,8 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
+              
             >
               <option value="cavite">Cavite</option>
             </select>
@@ -290,8 +302,8 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm"
-              style="cursor: pointer"
+              class="form-control "
+              
             >
               <option value="tanza">Tanza</option>
             </select>
@@ -301,7 +313,7 @@
             >
             <input
               type="number"
-              class="form-control form-control-sm rounded-3"
+              class="form-control  rounded-3"
             />
           </div>
           <!-- 2nd step 3rd column-->
@@ -329,10 +341,67 @@
             <p class="text-secondary pb-2">
               Provide your most recent or highest level of education.
             </p>
-            <label for="" class="fw-bold"
-              ><input type="checkbox" class="me-3" />I have an educational
-              background</label
+            <label for="educationalBg" class="fw-bold"  style="cursor: pointer;"
+              ><input
+                type="checkbox"
+                id="educationalBg"
+                ng-model="educationalBg"
+                class="me-3"
+              />I have an educational background</label
             >
+
+            <div class="p-2" ng-show="educationalBg">
+              <label for="" class="fw-bold text-dark opacity-75">
+                Highest Educational Attainment
+              </label>
+              <select name="" id="" ng-model="selectedEducation" class="form-control form-control-md my-2">
+                <option value="" disabled selected>--Select Education--</option>
+                <option ng-repeat="i in educationalList" value="{{i.title}}">
+                  {{i.title}}
+                </option>
+              </select>
+            </div>
+
+            <label
+            for="isGraduated"
+            class="fw-bold text-dark opacity-75 m-0"
+            style="cursor: pointer;"
+            ng-show="selectedEducation && educationalBg"
+            ><input
+              type="checkbox"
+              id="isGraduated"
+              ng-model="isGraduated"
+              class="me-3"
+            />I have graduated
+          </label>
+
+            <!-- This section shows if anything is selected-->
+            <div ng-show="selectedEducation && educationalBg" class="p-2"> 
+              <!--Only show input if selected has a label-->
+              <div ng-if="hasExtraLabel(selectedEducation)">
+                <p for="" class="my-2 fw-bold text-dark opacity-75">
+                  {{getEducationLabel(selectedEducation).label}}
+                </p>
+                  <input type="text" class="form-control" placeholder="{{getEducationLabel(selectedEducation).placeholder}}">
+              </div>
+              <!-- always show shool name input-->
+                <p for="" class="my-2 fw-bold text-dark opacity-75">School Name</p>
+                <input type="text" class="form-control" placeholder="e.g., University of the Philippines">
+                <div class="row py-2">
+                  <div class="col">
+                    <p class="my-2 fw-bold text-dark opacity-75">Yeary Started</p>
+                    <input type="text" class="form-control" minlength="4" maxlength="4" placeholder="e.g., 2019">
+                  </div>
+                  <div class="col"> 
+                    <div ng-show="isGraduated">
+                      <p class="my-2 fw-bold text-dark opacity-75">Year Graduated</p>
+                      <input type="text" class="form-control" minlength="4"
+                      maxlength="4" placeholder="e.g., 2025">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
           </div>
           <!-- 3rd step 2nd col-->
           <div class="col">
@@ -371,8 +440,8 @@
             <select
               name=""
               id=""
-              class="form-control form-control-sm my-2"
-              style="cursor: pointer"
+              class="form-control  my-2"
+              
             >
               <option value="english">English</option>
             </select>
@@ -381,7 +450,7 @@
               <div ng-repeat="star in [].constructor(10) track by $index">
                 <div
                   class="fa fa-star fs-5"
-                  style="cursor: pointer"
+                  
                   ng-click="handleRate('verbalRate', $index)"
                   ng-class="{'text-warning': $index < ratings.verbalRate, 'text-secondary': $index >= ratings.verbalRate}"
                 ></div>
@@ -393,7 +462,7 @@
               <div ng-repeat="star in [].constructor(10) track by $index">
                 <div
                   class="fa fa-star fs-5"
-                  style="cursor: pointer"
+                  
                   ng-class="{'text-warning' : $index < ratings.writtenRate, 'text-secondary' : $index >= ratings.writtenRate}"
                   ng-click="handleRate('writtenRate', $index)"
                 ></div>
@@ -405,35 +474,45 @@
       </div>
       <!-- Step 5-->
       <div ng-switch-when="4">
-          <div class="d-flex flex-column align-items-center justify-content-center">
-            <p class="text-center text-success fw-bold fs-4">You're Ready</p>
-              <p class="d-flex flex-column align-items-center justify-content-center gap-2 fs-6">
-                <span class="text-center">
-                  Now that everything is setup, you should be ready to explore a massive
-                  range of opportunities awaiting at your fingertips!
-                </span>
-                <span class="text-center">
-                  You can still
-                    change your information on your <b>Profile</b> after registration.
-                </span>
-                <strong  class="text-center">Click
-                  "Finish Registration" to begin your journey!</strong>
-                  <strong class="text-secondary p-2">
-                    How would you like to be on the Map?
-                  </strong>
-              </p>
-              <label for="" class="pb-4">
-                <input type="checkbox" ng-model="isVisible">
-                {{isVisible ? "Visible" : "Hidden"}}
-              </label>
+        <div
+          class="d-flex flex-column align-items-center justify-content-center"
+        >
+          <p class="text-center text-success fw-bold fs-4">You're Ready</p>
+          <p
+            class="d-flex flex-column align-items-center justify-content-center gap-2 fs-6"
+          >
+            <span class="text-center">
+              Now that everything is setup, you should be ready to explore a
+              massive range of opportunities awaiting at your fingertips!
+            </span>
+            <span class="text-center">
+              You can still change your information on your <b>Profile</b> after
+              registration.
+            </span>
+            <strong class="text-center"
+              >Click "Finish Registration" to begin your journey!</strong
+            >
+            <strong class="text-secondary p-2">
+              How would you like to be on the Map?
+            </strong>
+          </p>
+          <label for="" class="pb-4">
+            <input type="checkbox" ng-model="isVisible" />
+            {{isVisible ? "Visible" : "Hidden"}}
+          </label>
 
-              <div class="d-flex flex-row gap-2">
-                <button class="btn btn-primary text-white fw-bold opacity-75">Finish and Proceed to Payment</button>
-                <button class="btn btn-primary text-white fw-bold opacity-75"
-                ng-click="prevStep()"
-                >Take me back</button>
-              </div>
+          <div class="d-flex flex-row gap-2">
+            <button class="btn btn-primary text-white fw-bold opacity-75">
+              Finish and Proceed to Payment
+            </button>
+            <button
+              class="btn btn-primary text-white fw-bold opacity-75"
+              ng-click="prevStep()"
+            >
+              Take me back
+            </button>
           </div>
+        </div>
       </div>
     </div>
 
@@ -445,13 +524,13 @@
       <button
         ng-click="prevStep()"
         ng-show="currentStep > 0"
-        class="btn btn-primary"
+        class="btn btn-primary rounded-3 fw-semibold px-4 me-auto mt-4"
       >
         ← Prev</button
       ><button
         ng-click="nextStep()"
         ng-disable="currentStep === steps.length - 1"
-        class="btn btn-primary text ms-auto mt-4"
+        class="btn btn-primary rounded-3 fw-semibold px-4 ms-auto mt-4"
       >
         Next →
       </button>
