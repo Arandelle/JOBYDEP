@@ -83,21 +83,10 @@
   <div
     class="card-header d-flex flex-row align-items-center justify-content-end gap-4"
   >
-    <p class="fw-bold mb-0">Welcome, {{profile.username}}</p>
+    <p class="fw-bold mb-0 uppercase text-capitalize">Welcome, {{profile.username}}</p>
     <buton class="btn btn-outline-danger" ng-click="logout()">Logout</buton>
   </div>
-
-  <!-- Stepper Header -->
-  <!-- <div class="stepper-wrapper p-4" style="background-color: #03045e">
-    <div class="stepper-item" 
-         ng-repeat="step in steps" 
-         ng-class="{'active': currentStep === $index, 'completed': currentStep > $index}">
-        <div class="step-counter text-dark" ng-click="goToStep($index)" ng-class="step.icon"></div>
-        <div class="step-name">{{step.title}}
-        </div>
-    </div>
-</div> -->
-
+<!--Stepper header-->
   <div class="d-flex justify-content-between position-relative p-4 rounded-3" style="background-color: #03045e;">
     <div class="stepper-item" ng-repeat="step in steps"  ng-class="{'active': currentStep === $index, 'completed': currentStep > $index}">
       <div class="step-icon" ng-click="goToStep($index)" ng-class="step.icon"></div>
@@ -106,8 +95,9 @@
   </div>
   <!-- card-body-->
   <div class="card-body shadow pb-0">
-    <!-- First step modal-->
+   <!--Steps start here-->
     <div ng-switch="currentStep" class="py-4">
+       <!-- First step modal-->
       <div ng-switch-when="0">
         <p class="text-primary h5 fw-bold">Employment Information</p>
         <p class="text-secondary pb-2">
@@ -381,14 +371,29 @@
             <select
             name=""
             id=""
-            class="form-control form-control-sm"
+            class="form-control form-control-sm my-2"
             style="cursor: pointer"
           >
             <option value="english">English</option>
           </select>
-            <p class="text-secondary fw-bold py-3">Verbal Proficiency</p>
+            <p class="text-secondary fw-bold py-2 m-0">Verbal Proficiency</p>
             <div class="gap-2 d-flex">
-              <div ng-repeat="star in [].constructor(10) track by $index"><input type="checkbox" ng-value="$index + 1"></div>
+              <div ng-repeat="star in [].constructor(10) track by $index">
+                <div class="fa fa-star fs-5" style="cursor: pointer;" ng-click="handleRate('verbalRate', $index)"
+                ng-class="{'text-warning': $index < ratings.verbalRate, 'text-secondary': $index >= ratings.verbalRate}"
+                ></div>
+              </div>
+              <p class="ms-3 fw-bold">{{ratings.verbalPercentage || '0%'}}</p>
+            </div>
+            <p class="text-secondary fw-bold py-2 m-0">Written Proficieny</p>
+            <div class="gap-2 d-flex">
+              <div ng-repeat="star in [].constructor(10) track by $index">
+               <div class="fa fa-star fs-5" style="cursor: pointer;"
+                ng-class="{'text-warning' : $index < ratings.writtenRate, 'text-secondary' : $index >= ratings.writtenRate}"
+                ng-click="handleRate('writtenRate', $index)"
+               ></div>
+              </div>
+              <p class="ms-3 fw-bold">{{ratings.writtenPercentage || '0%'}}</p>
             </div>
           </div>
         </div>
@@ -398,6 +403,8 @@
         <div>This is the step 5</div>
       </div>
     </div>
+
+    <!-- Next/Prev Buttons-->
     <div
       class="d-flex align-items-center justify-content-between border-top py-3"
     >

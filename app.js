@@ -519,6 +519,21 @@ app.controller(
       $scope.currentStep = step;
     };
 
+    $scope.ratings = {
+      verbalRate : 0,
+      writtenRate : 0,
+      verbalPercentage: '0%',
+      writtenPercentage: '0%'
+    }
+
+    $scope.handleRate = function(field, index){
+
+      $scope.ratings[field] = index + 1;
+      const percentageField = field.replace('Rate', 'Percentage');
+      $scope.ratings[percentageField] = ($scope.ratings[field] * 10) + '%';
+
+    }
+
     $scope.viewProfile = function () {
       $location.path("/profile");
     };
