@@ -410,9 +410,16 @@
                 class="me-3"
               />I have past work experience</label
             >
-
+            <!-- Show when hasPastwork is true-->
             <div class="border p-3 bg-light" ng-show="hasPastWork">
               <div class="bg-white p-4 border d-flex flex-column gap-2 mb-2" ng-repeat="exp in experiences track by $index"> 
+                
+                <!-- Remove button/ show only on new item-->
+                <button class="btn btn-primary fa fa-close ms-auto"
+                ng-if="$index > 0"
+                ng-click="removeExperience($index)"
+                ></button>
+
                 <label class="text-dark text-secondary fw-semibold">Job Title/Position</label>
                 <input type="text" class="form-control" ng-model="exp.jobTitle" />
               
@@ -448,11 +455,16 @@
                 </label>
               </div>
 
-              <div class="d-flex">
-                <button class="btn btn-primary my-2 ms-auto" ng-click="addExperience()">
+              <div class="d-flex flex-column">
+                <button class="btn btn-primary my-2 ms-auto" ng-click="addExperience()"
+                ng-disabled="experiences.length >= 3">
                   <span class="fa fa-plus-circle"></span>
                   Add another experience
                 </button>
+
+                <p class="p-2 text-danger fa fa-warning ms-auto"
+                ng-show="experiences.length >=3"
+                > You’ve reached the maximum of 3 entries.</p>
               </div>
 
             </div>
@@ -462,48 +474,76 @@
       <!-- Step 4-->
       <div ng-switch-when="3">
         <div class="row">
+          <p class="text-primary h5 fw-bold my-4">
+            Show Off Your Competencies
+          </p>
           <!-- 4th step first columm-->
           <div class="col">
-            <p class="text-primary h5 fw-bold my-4">
-              Show Off Your Competencies
-            </p>
             <p class="text-primary fw-bold fs-6 pb-2">Other Skills</p>
-            <label for="" class="fw-bold"
-              ><input type="checkbox" class="me-3" />Do you have other
+            <label for="otherSkills" class="fw-bold" style="cursor: pointer;"
+              ><input type="checkbox" id="otherSkills" ng-model="otherSkills" class="me-3" />Do you have other
               skills?</label
             >
+
+            <div class="d-flex flex-column gap-2 mt-2" ng-show="otherSkills">
+              <label class="text-dark text-secondary fw-semibold">Select Skills (up to 5)</label>
+              <input type="text" class="form-control"/>
+            </div>
+
           </div>
           <!--4th step 2nd column-->
           <div class="col">
-            <p class="text-primary h4 fw-bold my-4 opacity-0">
-              Show Off Your Competencies
-            </p>
             <p class="text-primary fw-bold fs-6 pb-2">Language Proficiency</p>
-            <p class="text-primary fw-bold fs-6 pb-2">Primary Language</p>
-            <select name="" id="" class="form-control my-2">
-              <option value="english">English</option>
-            </select>
-            <p class="text-secondary fw-bold py-2 m-0">Verbal Proficiency</p>
-            <div class="gap-2 d-flex">
-              <div ng-repeat="star in [].constructor(10) track by $index">
-                <div
-                  class="fa fa-star fs-5"
-                  ng-click="handleRate('verbalRate', $index)"
-                  ng-class="{'text-warning': $index < ratings.verbalRate, 'text-secondary': $index >= ratings.verbalRate}"
-                ></div>
+            <!-- section for the language-->
+            <div class="py-2" ng-repeat="lang in languageProficiency track by $index">
+              <p class="text-primary fw-bold fs-6">{{$index === 0 ? "Primary Language" : "Additional Language "+ ($index + 1)}}</p>
+              <select name="" id="" class="form-control my-2" ng-model="lang.language">
+                <option value="" disabled selected>--SELECT LANGUAGE--</option>
+                <option value="english">English</option>
+                <option value="filipino">Filipino</option>
+                <option value="japanese">Japanese</option>
+                <option value="chinese">Chinese</option>
+              </select>
+              <p class="text-secondary fw-bold py-2 m-0">Verbal Proficiency</p>
+              <div class="gap-2 d-flex">
+                <div ng-repeat="star in [].constructor(10) track by $index">
+                  <div
+                    class="fa fa-star fs-5"
+                    ng-click="handleRate('verbalRate',$parent.$index, $index)"
+                    ng-class="{'text-warning': $index < lang.verbalRate, 'text-secondary': $index >= lang.verbalRate}"
+                  ></div>
+                </div>
+                <p class="ms-3 fw-bold">{{lang.verbalPercentage || '0%'}}</p>
               </div>
-              <p class="ms-3 fw-bold">{{ratings.verbalPercentage || '0%'}}</p>
+              <p class="text-secondary fw-bold py-2 m-0">Written Proficieny</p>
+              <div class="gap-2 d-flex border-bottom">
+                <div ng-repeat="star in [].constructor(10) track by $index">
+                  <div
+                    class="fa fa-star fs-5"
+                    ng-class="{'text-warning' : $index < lang.writtenRate, 'text-secondary' : $index >= lang.writtenRate}"
+                    ng-click="handleRate('writtenRate',$parent.$index, $index)"
+                  ></div>
+                </div>
+                <p class="ms-3 fw-bold">{{lang.writtenPercentage || '0%'}}</p>
+              </div>
             </div>
-            <p class="text-secondary fw-bold py-2 m-0">Written Proficieny</p>
-            <div class="gap-2 d-flex">
-              <div ng-repeat="star in [].constructor(10) track by $index">
-                <div
-                  class="fa fa-star fs-5"
-                  ng-class="{'text-warning' : $index < ratings.writtenRate, 'text-secondary' : $index >= ratings.writtenRate}"
-                  ng-click="handleRate('writtenRate', $index)"
-                ></div>
-              </div>
-              <p class="ms-3 fw-bold">{{ratings.writtenPercentage || '0%'}}</p>
+
+           <button class="d-flex flex-row align-items-center gap-2 btn btn-primary py-2 px-4 rounded-4 ms-auto mt-4"
+           ng-click="addNewLang()"
+           ng-show="languageProficiency.length < 3"
+           >
+            <span class="fa fa-plus-circle"></span>
+            <p class="m-0 fw-bold">Add More</p>
+           </button>
+          </div>
+
+          <!--4th step 3rd column-->
+          <div class="col">
+            <p class="text-primary fw-bold fs-6 pb-2">Personal Traits</p>
+            
+            <div class="d-flex flex-column gap-2 mt-2">
+              <label class="text-dark text-secondary fw-semibold">Select up to 3 traits that best describe you:</label>
+              <input type="text" class="form-control" />
             </div>
           </div>
         </div>

@@ -540,27 +540,10 @@ app.controller(
       return item && item.label;
     }
 
-
-    $scope.ratings = {
-      verbalRate: 0,
-      writtenRate: 0,
-      verbalPercentage: "0%",
-      writtenPercentage: "0%",
-    };
-
-    $scope.handleRate = function (field, index) {
-      $scope.ratings[field] = index + 1;
-      const percentageField = field.replace("Rate", "Percentage");
-      $scope.ratings[percentageField] = $scope.ratings[field] * 10 + "%";
-    };
-
-    // for default check of input checkbox
-    $scope.isVisible = true;
-
     $scope.experiences = [{
       jobTitle: '',
       companyName: '',
-      isEmployed: true,
+      isEmployed: false,
       startDate: '',
       endDate: '',
       skills: '',
@@ -571,14 +554,50 @@ app.controller(
       $scope.experiences.push({
         jobTitle: '',
         companyName: '',
-        isEmployed: true,
+        isEmployed: false,
         startDate: '',
         endDate: '',
         skills: '',
         contactNumber: ''
       });
     };
+
+    $scope.removeExperience = function(index){
+      $scope.experiences.splice(index, 1);
+    }
+
+    $scope.languageProficiency = [
+      {
+        language: "",
+        verbalRate: 0,
+        writtenRate: 0,
+        verbalPercentage: '0%',
+        writtenPercentage: '0%'
+      }
+    ];
+
+    $scope.addNewLang = function(){
+      $scope.languageProficiency.push({
+        language: "",
+        verbalRate: 0,
+        writtenRate: 0,
+        verbalPercentage: "0%",
+        writtenPercentage: "0%"
+      })
+    }
+
+    $scope.handleRate = function (field, langIndex, starIndex) {
+      // update the specific language's rating
+      $scope.languageProficiency[langIndex][field] = starIndex + 1;
+
+      // calculate percentage based on rate
+      const percentageField = field.replace("Rate", "Percentage");
+      $scope.languageProficiency[langIndex][percentageField] = $scope.languageProficiency[langIndex][field] * 10 + "%";
+    };
     
+    
+    // for default check for visibility of user profile
+    $scope.isVisible = true;
 
     $scope.logout = function () {
       AuthService.logout().then(function () {
