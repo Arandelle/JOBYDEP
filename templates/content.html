@@ -411,60 +411,50 @@
               />I have past work experience</label
             >
 
-            <div class="border p-3 bg-light">
-              <div class="bg-white p-4 border d-flex flex-column gap-2">
-                <label for="" class="text-dark text-secondary fw-semibold"
-                  >Job Title/Position</label
-                >
-                <input type="text" class="form-control" />
-
-                <label for="" class="text-dark text-secondary fw-semibold"
-                  >Company Name</label
-                >
-                <input type="text" class="form-control" />
-
-                <label
-                  for="isEmployed"
-                  class="text-secondary fw-bold py-2"
-                  style="cursor: pointer"
-                >
-                  <input
-                    type="checkbox"
-                    id="isEmployed"
-                    ng-model="isEmployed"
-                  />
+            <div class="border p-3 bg-light" ng-show="hasPastWork">
+              <div class="bg-white p-4 border d-flex flex-column gap-2 mb-2" ng-repeat="exp in experiences track by $index"> 
+                <label class="text-dark text-secondary fw-semibold">Job Title/Position</label>
+                <input type="text" class="form-control" ng-model="exp.jobTitle" />
+              
+                <label class="text-dark text-secondary fw-semibold">Company Name</label>
+                <input type="text" class="form-control" ng-model="exp.companyName" />
+              
+                <label class="text-secondary fw-bold py-2" style="cursor: pointer">
+                  <input type="checkbox" ng-model="exp.isEmployed" />
                   I am currently employed in this role
                 </label>
-
+              
                 <div class="row">
                   <div class="col">
-                    <label for="" class="fw-bold text-secondary py-2"
-                      >Start Month & Year</label
-                    ><input type="date" class="form-control" />
+                    <label class="fw-bold text-secondary py-2">Start Month & Year</label>
+                    <input type="date" class="form-control" ng-model="exp.startDate" />
                   </div>
                   <div class="col">
-                    <div ng-show="!isEmployed">
-                      <label for="" class="fw-bold text-secondary py-2"
-                        >End Month & Year</label
-                      ><input type="date" class="form-control" />
+                    <div ng-show="!exp.isEmployed">
+                      <label class="fw-bold text-secondary py-2">End Month & Year</label>
+                      <input type="date" class="form-control" ng-model="exp.endDate" />
                     </div>
                   </div>
                 </div>
-
+              
                 <label class="text-secondary fw-bold py-2">
                   Skills Acquired (up to 5)
-                  <input type="text" class="form-control mt-2" />
+                  <input type="text" class="form-control mt-2" ng-model="exp.skills" />
                 </label>
+              
                 <label class="text-secondary fw-bold pb-2">
                   Company Contact Number (optional)
-                  <input type="text" class="form-control mt-2" />
+                  <input type="text" class="form-control mt-2" ng-model="exp.contactNumber" />
                 </label>
+              </div>
 
-                <button class="btn btn-primary ms-auto my-4">
+              <div class="d-flex">
+                <button class="btn btn-primary my-2 ms-auto" ng-click="addExperience()">
                   <span class="fa fa-plus-circle"></span>
                   Add another experience
                 </button>
               </div>
+
             </div>
           </div>
         </div>

@@ -557,6 +557,29 @@ app.controller(
     // for default check of input checkbox
     $scope.isVisible = true;
 
+    $scope.experiences = [{
+      jobTitle: '',
+      companyName: '',
+      isEmployed: true,
+      startDate: '',
+      endDate: '',
+      skills: '',
+      contactNumber: ''
+    }];
+
+    $scope.addExperience = function () {
+      $scope.experiences.push({
+        jobTitle: '',
+        companyName: '',
+        isEmployed: true,
+        startDate: '',
+        endDate: '',
+        skills: '',
+        contactNumber: ''
+      });
+    };
+    
+
     $scope.logout = function () {
       AuthService.logout().then(function () {
         $location.path("/login");
