@@ -562,10 +562,6 @@ app.controller(
       });
     };
 
-    $scope.removeExperience = function(index){
-      $scope.experiences.splice(index, 1);
-    }
-
     $scope.languageProficiency = [
       {
         language: "",
@@ -595,7 +591,14 @@ app.controller(
       $scope.languageProficiency[langIndex][percentageField] = $scope.languageProficiency[langIndex][field] * 10 + "%";
     };
     
-    
+    // dynamic remove item - it handles array name which should be remove
+    $scope.removeItem = function(arrayName, index){
+      if($scope[arrayName] && Array.isArray($scope[arrayName])){
+        $scope[arrayName].splice(index, 1);
+      }
+    }
+
+
     // for default check for visibility of user profile
     $scope.isVisible = true;
 

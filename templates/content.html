@@ -417,7 +417,7 @@
                 <!-- Remove button/ show only on new item-->
                 <button class="btn btn-primary fa fa-close ms-auto"
                 ng-if="$index > 0"
-                ng-click="removeExperience($index)"
+                ng-click="removeItem('experiences',$index)"
                 ></button>
 
                 <label class="text-dark text-secondary fw-semibold">Job Title/Position</label>
@@ -496,7 +496,13 @@
             <p class="text-primary fw-bold fs-6 pb-2">Language Proficiency</p>
             <!-- section for the language-->
             <div class="py-2" ng-repeat="lang in languageProficiency track by $index">
-              <p class="text-primary fw-bold fs-6">{{$index === 0 ? "Primary Language" : "Additional Language "+ ($index + 1)}}</p>
+              <div class="d-flex flex-row align-items-center justify-content-between py-2">
+                <p class="text-primary fw-bold fs-6 m-0">{{$index === 0 ? "Primary Language" : "Additional Language "+ ($index + 1)}}</p>
+                <button class="btn btn-danger fs-5 fa fa-trash"
+                ng-show="$index > 0"
+                ng-click="removeItem('languageProficiency', $index)"
+                ></button>
+              </div>
               <select name="" id="" class="form-control my-2" ng-model="lang.language">
                 <option value="" disabled selected>--SELECT LANGUAGE--</option>
                 <option value="english">English</option>
